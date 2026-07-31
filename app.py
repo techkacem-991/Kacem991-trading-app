@@ -12,9 +12,9 @@ TELEGRAM_TOKEN = "8968850415:AAG9DwLeyHQ7iNuLmISdhnHnSh7m6us_PgQ"
 CHAT_ID = "5723285644"
 
 SYMBOLS_TO_SCAN = [
-    "POL-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD",
+    "BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD",
     "DOGE-USD", "AVAX-USD", "LINK-USD", "ADA-USD", "NEAR-USD",
-    "RENDER-USD", "FET-USD", "LTC-USD", "BCH-USD", "BTC-USD",
+    "RENDER-USD", "FET-USD", "LTC-USD", "BCH-USD",
     "ATOM-USD", "ETC-USD", "XLM-USD", "FIL-USD", "ALGO-USD", "ICP-USD"
 ]
 CHECK_INTERVAL_HOURS = 4
@@ -223,9 +223,9 @@ HTML_TEMPLATE = """
 </head>
 <body>
     <div class="container">
-        <h2>📊 TRADING WITH KACEM</h2>
-        <p>اضغط لفحص كافة الأسواق الحية وجلب تقارير العملات كاملة:</p>
-        <button onclick="fetchAllSignals()">🔍 افحص السوق الآن</button>
+        <h2>📊 التقرير الذكي والمتقدم لجميع العملات</h2>
+        <p>اضغط لفحص كافة الأسواق الحية وجلب تقرير العملات كاملاً:</p>
+        <button onclick="fetchAllSignals()">🔍 فحص السوق وجلب كافة العملات</button>
         <div id="results-container"></div>
     </div>
 
