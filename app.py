@@ -8,17 +8,19 @@ SYMBOLS_TO_SCAN = [
     "DOGEUSDT", "AVAXUSDT", "LINKUSDT", "ADAUSDT", "NEARUSDT"
 ]
 
+@app.route('/scan')
 def scan_market():
     best_results = {}
     max_score = -1
+    
     for symbol in SYMBOLS_TO_SCAN:
         try:
-            url = f"https://api.binance.com/api/v3/klines?symbol={symbol}&interval=1d&limit=30"
-            res = requests.get(url, timeout=6)
+            url = f"https://api.binance.com/api/v3/klines?symbol={symbol}&interval=1d&limit=25"
+            res = requests.get(url, timeout=3)
             if res.status_code != 200:
                 continue
             klines = res.json()
-            if not klines or len(klines) < 20:
+            if not klines or len(klines) < 15:
                 continue
             
             closes = [float(k[4]) for k in klines]
@@ -26,21 +28,24 @@ def scan_market():
             lows = [float(k[3]) for k in klines]
             current_price = closes[-1]
             
-            # حساب RSI (نفس معادلة التليجرام)
-            period = 14
-            gains = sum([closes[-i] - closes[-i-1] for i in range(1, period + 1) if (closes[-i] - closes[-i-1]) >= 0])
-            losses = sum([-(closes[-i] - closes[-i-1]) for i in range(1, period + 1) if (closes[-i] - closes[-i-1]) < 0])
-            avg_gain = gains / period
-            avg_loss = losses / period
+            # حساب RSI سريع
+            gains, losses = 0, 0
+            for i in range(1, 15):
+                diff = closes[-i] - closes[-i-1]
+                if diff >= 0:
+      @@ -44,8 +45,8 @@
+                else:
+                    losses -= diff
+            avg_gain = gains / 14
+            avg_loss = losses / 14
             rsi = 100.0 if avg_loss == 0 else 100 - (100 / (1 + (avg_gain / avg_loss)))
             
-            # حساب ATR للأهداف ووقف الخسارة
+            # حساب ATR سريع
             tr_list = [max(highs[i]-lows[i], abs(highs[i]-closes[i-1]), abs(lows[i]-closes[i-1])) for i in range(1, len(closes))]
             last_atr = sum(tr_list[-14:]) / 14 if len(tr_list) >= 14 else current_price * 0.03
             
             win_prob = round(min(max(50 + (50 - abs(rsi - 50)), 45), 95), 1)
             
-            # اختيار الأفضل بناءً على النسبة
             if win_prob > max_score:
                 max_score = win_prob
                 best_results = {
@@ -52,13 +57,10 @@ def scan_market():
                     "sl": current_price - (1.5 * last_atr),
                     "rsi": rsi
                 }
-        except Exception as e:
+        except:
             continue
             
-    return best_results if best_results else {
-        "symbol": "BTCUSDT", "price": closes[-1] if 'closes' in locals() else 65000, 
-        "win": 85.0, "tp1": 67000, "tp2": 69000, "sl": 63500, "rsi": 52.5
-    }
+    return jsonify(best_results)
 
 HTML_PAGE = """
 <!DOCTYPE html>
@@ -77,8 +79,8 @@ HTML_PAGE = """
     </style>
 </head>
 <body>
-    <h2>📊 بوت إشارات التداول المباشر</h2>
-    <p>اضغط لفحص السوق وجلب أقوى صفقة حالياً:</p>
+    <h2>📊 تداول مع قاسم</h2>
+    <p>اضغط لفحص الأسواق الحية وجلب أقوى صفقة:</p>
     <button onclick="fetchSignal()">🔍 فحص السوق وجلب الصفقة</button>
     <div id="result" class="card" style="display:none;"></div>
 
@@ -86,7 +88,7 @@ HTML_PAGE = """
         function fetchSignal() {
             const resDiv = document.getElementById('result');
             resDiv.style.display = 'block';
-            resDiv.innerHTML = '<div class="loading">⏳ جاري فحص منصة Binance وتحليل المؤشرات...</div>';
+            resDiv.innerHTML = '<div class="loading">⏳ جاري الاتصال المباشر بمنصة Binance...</div>';
             
             fetch('/scan')
             .then(response => response.json())
@@ -105,10 +107,8 @@ HTML_PAGE = """
                         <div class="item">📊 <b>مؤشر القوة النسبية (RSI):</b> ${data.rsi.toFixed(2)}</div>
                     `;
                 } else {
-                    resDiv.innerHTML = '<p style="color: #ef4444;">❌ لم يتم العثور على فرصة مطابقة للشروط حالياً.</p>';
+                    resDiv.innerHTML = '<p style="color: #ef4444;">❌ لم يتم جلب البيانات، أعد المحاولة.</p>';
                 }
-            }).catch(err => {
-                resDiv.innerHTML = '<p style="color: #ef4444;">❌ حدث خطأ في الاتصال بالخادم.</p>';
             });
         }
     </script>
@@ -119,11 +119,6 @@ HTML_PAGE = """
 @app.route('/')
 def home():
     return render_template_string(HTML_PAGE)
-
-@app.route('/scan')
-def scan():
-    result = scan_market()
-    return jsonify(result)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
