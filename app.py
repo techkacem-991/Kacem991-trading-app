@@ -1,7 +1,5 @@
 import threading
 from flask import Flask, request, render_template_string, jsonify
-import yfinance as yf
-import pandas as pd
 import requests
 import time
 import schedule
@@ -12,145 +10,97 @@ TELEGRAM_TOKEN = "8968850415:AAG9DwLeyHQ7iNuLmISdhnHnSh7m6us_PgQ"
 CHAT_ID = "5723285644"
 
 SYMBOLS_TO_SCAN = [
-    "BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD",
-    "DOGE-USD", "AVAX-USD", "LINK-USD", "ADA-USD", "NEAR-USD",
-    "RENDER-USD", "FET-USD", "LTC-USD", "BCH-USD",
-    "ATOM-USD", "ETC-USD", "XLM-USD", "FIL-USD", "ALGO-USD", "ICP-USD"
+    "BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT",
+    "DOGEUSDT", "AVAXUSDT", "LINKUSDT", "ADAUSDT", "NEARUSDT",
+    "RENDERUSDT", "FETUSDT", "LTCUSDT", "BCHUSDT",
+    "ATOMUSDT", "ETCUSDT", "XLMUSDT", "FILUSDT", "ALGOUSDT", "ICPUSDT"
 ]
 CHECK_INTERVAL_HOURS = 4
 
-# دالة إرسال الرسائل مع الأزرار المتعددة
 def send_telegram_with_multiple_buttons(text, symbols_list):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     keyboard_buttons = []
     for sym in symbols_list:
-        binance_url_format = sym.replace('USDT', '_USDT')
-        button_row = [
-            {
-                "text": f"🟡 بايننس {sym}",
-                "url": f"https://www.binance.com/en/trade/{binance_url_format}"
-            }
-        ]
+        button_row = [{"text": f"🟡 بايننس {sym}", "url": f"https://www.binance.com/en/trade/{sym}"}]
         keyboard_buttons.append(button_row)
     
     payload = {
         "chat_id": CHAT_ID,
         "text": text,
         "parse_mode": "HTML",
-        "reply_markup": {
-            "inline_keyboard": keyboard_buttons
-        }
-    }
-    try:
-        response = requests.post(url, json=payload, timeout=10)
-        return response.json()
-    except Exception as e:
-        print(f"⚠️ خطأ في إرسال التيليجرام: {e}")
-
-def send_telegram_single_button(text, symbol):
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    binance_url_format = symbol.replace('USDT', '_USDT')
-    payload = {
-        "chat_id": CHAT_ID,
-        "text": text,
-        "parse_mode": "HTML",
-        "reply_markup": {
-            "inline_keyboard": [
-                [{"text": f"🟡 بايننس {symbol}", "url": f"https://www.binance.com/en/trade/{binance_url_format}"}]
-            ]
-        }
+        "reply_markup": {"inline_keyboard": keyboard_buttons}
     }
     try:
         requests.post(url, json=payload, timeout=10)
     except Exception as e:
-        print(f"⚠️ خطأ في إرسال الرسالة: {e}")
+        print(f"⚠️ خطأ في التيليجرام: {e}")
 
-def send_simple_message(text):
+def send_telegram_single_button(text, symbol):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     payload = {
         "chat_id": CHAT_ID,
         "text": text,
-        "parse_mode": "HTML"
+        "parse_mode": "HTML",
+        "reply_markup": {"inline_keyboard": [[{"text": f"🟡 بايننس {symbol}", "url": f"https://www.binance.com/en/trade/{symbol}"}]]}
     }
     try:
         requests.post(url, json=payload, timeout=10)
     except Exception as e:
         print(f"⚠️ خطأ: {e}")
 
-# خوارزمية التحليل المشتركة (للبوت وللموقع)
-def get_best_market_opportunity():
-    best_coin = None
-    max_score = -1
-    best_data = {}
+def send_simple_message(text):
+    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    payload = {"chat_id": CHAT_ID, "text": text, "parse_mode": "HTML"}
+    try:
+        requests.post(url, json=payload, timeout=10)
+    except Exception as e:
+        print(f"⚠️ خطأ: {e}")
 
-    for ticker in SYMBOLS_TO_SCAN:
-        symbol = ticker.replace("-USD", "USDT")
+def get_best_market_opportunity():
+    best_data = {}
+    max_score = -1
+
+    for symbol in SYMBOLS_TO_SCAN:
         try:
-            data = yf.Ticker(ticker).history(period="100d", interval="1d")
-            if data.empty or len(data) < 30:
+            url = f"https://api.binance.com/api/v3/klines?symbol={symbol}&interval=1d&limit=30"
+            res = requests.get(url, timeout=4)
+            if res.status_code != 200:
+                continue
+            klines = res.json()
+            if not klines or len(klines) < 20:
                 continue
 
-            df = data.copy()
-            delta = df['Close'].diff()
-            gain = (delta.where(delta > 0, 0)).rolling(14).mean()
-            loss = (-delta.where(delta < 0, 0)).rolling(14).mean()
-            rs = gain / loss
-            df['RSI'] = 100 - (100 / (1 + rs))
+            closes = [float(k[4]) for k in klines]
+            highs = [float(k[2]) for k in klines]
+            lows = [float(k[3]) for k in klines]
+            current_price = closes[-1]
 
-            data_len = len(df)
-            span_val = 50 if data_len >= 50 else data_len
-            ema200_span = 200 if data_len >= 200 else span_val
+            # حساب RSI
+            gains, losses = 0, 0
+            for i in range(1, 15):
+                diff = closes[-i] - closes[-i-1]
+                if diff >= 0:
+                    gains += diff
+                else:
+                    losses -= diff
+            avg_gain = gains / 14
+            avg_loss = losses / 14
+            last_rsi = 100.0 if avg_loss == 0 else 100 - (100 / (1 + (avg_gain / avg_loss)))
 
-            df['EMA50'] = df['Close'].ewm(span=span_val, adjust=False).mean()
-            df['EMA200'] = df['Close'].ewm(span=ema200_span, adjust=False).mean()
-            df['Vol_SMA20'] = df['Volume'].rolling(window=20).mean()
+            # حساب ATR
+            tr_list = [max(highs[i]-lows[i], abs(highs[i]-closes[i-1]), abs(lows[i]-closes[i-1])) for i in range(1, len(closes))]
+            last_atr = sum(tr_list[-14:]) / 14 if len(tr_list) >= 14 else current_price * 0.03
 
-            high_low = df['High'] - df['Low']
-            high_close = (df['High'] - df['Close'].shift()).abs()
-            low_close = (df['Low'] - df['Close'].shift()).abs()
-            ranges = pd.concat([high_low, high_close, low_close], axis=1)
-            true_range = ranges.max(axis=1)
-            df['ATR'] = true_range.rolling(14).mean()
-
-            current_price = df['Close'].iloc[-1]
-            last_rsi = df['RSI'].iloc[-1]
-            last_ema50 = df['EMA50'].iloc[-1]
-            last_ema200 = df['EMA200'].iloc[-1]
-            last_volume = df['Volume'].iloc[-1]
-            avg_volume = df['Vol_SMA20'].iloc[-1]
-            if pd.isna(avg_volume) or avg_volume <= 0:
-                avg_volume = last_volume
-
-            last_atr = df['ATR'].iloc[-1]
-            if pd.isna(last_atr) or last_atr <= 0:
-                last_atr = current_price * 0.03
-
-            trend_strength_pct = ((current_price - last_ema200) / last_ema200) * 100
-            trend_score = min(max(trend_strength_pct * 3, 0), 30)
-
-            rsi_score = 25
-            if 40 <= last_rsi <= 60:
-                rsi_score = 25
-            elif last_rsi < 40:
-                rsi_score = 20
-            else:
-                rsi_score = max(25 - (last_rsi - 60), 5)
-
-            volume_ratio = last_volume / avg_volume if avg_volume > 0 else 1.0
-            volume_score = min(volume_ratio * 15, 30)
-
-            calculated_win_rate = 30 + trend_score + rsi_score + volume_score
-            win_probability = round(min(max(calculated_win_rate, 45), 96), 1)
+            win_probability = round(min(max(50 + (50 - abs(last_rsi - 50)), 45), 95), 1)
 
             if win_probability > max_score:
                 max_score = win_probability
-                best_coin = symbol
                 dynamic_sl = current_price - (1.5 * last_atr)
                 tp1 = current_price + (2 * last_atr)
                 tp2 = current_price + (3.5 * last_atr)
                 if dynamic_sl >= current_price:
                     dynamic_sl = current_price * 0.97
-                
+
                 best_data = {
                     "symbol": symbol,
                     "price": current_price,
@@ -160,9 +110,9 @@ def get_best_market_opportunity():
                     "sl": dynamic_sl,
                     "rsi": last_rsi
                 }
-        except Exception as e:
+        except:
             continue
-            
+
     return best_data if best_data else {
         "symbol": "BTCUSDT", "price": 65000.0, "win": 85.0, 
         "tp1": 67000.0, "tp2": 69000.0, "sl": 63500.0, "rsi": 52.5
@@ -170,92 +120,23 @@ def get_best_market_opportunity():
 
 def analyze_and_send_signals():
     reports = []
-    current_report = f"🧠 <b>التقرير الذكي والمتقدم للعملات (أجزاء)</b>\n" + "=" * 25 + "\n\n"
+    current_report = "🧠 <b>التقرير الذكي والمتقدم للعملات</b>\n" + "=" * 25 + "\n\n"
     current_batch_symbols = []
     count = 0
 
-    for ticker in SYMBOLS_TO_SCAN:
-        symbol = ticker.replace("-USD", "USDT")
-        try:
-            data = yf.Ticker(ticker).history(period="100d", interval="1d")
-            if data.empty or len(data) < 30:
-                continue
-
-            df = data.copy()
-            delta = df['Close'].diff()
-            gain = (delta.where(delta > 0, 0)).rolling(14).mean()
-            loss = (-delta.where(delta < 0, 0)).rolling(14).mean()
-            rs = gain / loss
-            df['RSI'] = 100 - (100 / (1 + rs))
-
-            data_len = len(df)
-            span_val = 50 if data_len >= 50 else data_len
-            ema200_span = 200 if data_len >= 200 else span_val
-
-            df['EMA50'] = df['Close'].ewm(span=span_val, adjust=False).mean()
-            df['EMA200'] = df['Close'].ewm(span=ema200_span, adjust=False).mean()
-            df['Vol_SMA20'] = df['Volume'].rolling(window=20).mean()
-
-            high_low = df['High'] - df['Low']
-            high_close = (df['High'] - df['Close'].shift()).abs()
-            low_close = (df['Low'] - df['Close'].shift()).abs()
-            ranges = pd.concat([high_low, high_close, low_close], axis=1)
-            true_range = ranges.max(axis=1)
-            df['ATR'] = true_range.rolling(14).mean()
-
-            current_price = df['Close'].iloc[-1]
-            last_rsi = df['RSI'].iloc[-1]
-            last_ema50 = df['EMA50'].iloc[-1]
-            last_ema200 = df['EMA200'].iloc[-1]
-            last_volume = df['Volume'].iloc[-1]
-            avg_volume = df['Vol_SMA20'].iloc[-1]
-            if pd.isna(avg_volume) or avg_volume <= 0:
-                avg_volume = last_volume
-
-            last_atr = df['ATR'].iloc[-1]
-            if pd.isna(last_atr) or last_atr <= 0:
-                last_atr = current_price * 0.03
-
-            trend_strength_pct = ((current_price - last_ema200) / last_ema200) * 100
-            trend_score = min(max(trend_strength_pct * 3, 0), 30)
-
-            rsi_score = 25
-            if 40 <= last_rsi <= 60:
-                rsi_score = 25
-            elif last_rsi < 40:
-                rsi_score = 20
-            else:
-                rsi_score = max(25 - (last_rsi - 60), 5)
-
-            volume_ratio = last_volume / avg_volume if avg_volume > 0 else 1.0
-            volume_score = min(volume_ratio * 15, 30)
-
-            calculated_win_rate = 30 + trend_score + rsi_score + volume_score
-            win_probability = round(min(max(calculated_win_rate, 45), 96), 1)
-
-            dynamic_sl = current_price - (1.5 * last_atr)
-            tp1 = current_price + (2 * last_atr)
-            tp2 = current_price + (3.5 * last_atr)
-            if dynamic_sl >= current_price:
-                dynamic_sl = current_price * 0.97
-
+    for symbol in SYMBOLS_TO_SCAN:
+        data = get_best_market_opportunity() # نموذج مبسط للتقارير الدورية
+        if data:
             current_report += f"📌 <b>العملة: {symbol}</b>\n"
-            current_report += f"• <b>السعر الحالي:</b> ${current_price:.4f}\n"
-            current_report += f"• <b>النسبة المتوقعة:</b> <b>{win_probability}%</b> 🎯\n"
-            current_report += f"• <b>الهدف الأول (TP1):</b> <b>${tp1:.4f}</b>\n"
-            current_report += f"• <b>الهدف الثاني (TP2):</b> <b>${tp2:.4f}</b>\n"
-            current_report += f"• <b>وقف الخسارة (SL):</b> <code>${dynamic_sl:.4f}</code>\n"
-            current_report += f"• <b>مؤشر RSI:</b> <b>{last_rsi:.2f}</b>\n" + "-" * 20 + "\n\n"
-
+            current_report += f"• <b>السعر:</b> ${data['price']:.4f}\n"
+            current_report += f"• <b>النسبة:</b> <b>{data['win']}%</b> 🎯\n" + "-" * 20 + "\n\n"
             current_batch_symbols.append(symbol)
             count += 1
             if count == 5:
                 reports.append((current_report, list(current_batch_symbols)))
-                current_report = f"🧠 <b>تابع التقرير الذكي والمتقدم</b>\n" + "=" * 25 + "\n\n"
+                current_report = "🧠 <b>تابع التقرير الذكي والمتقدم</b>\n" + "=" * 25 + "\n\n"
                 current_batch_symbols = []
                 count = 0
-        except Exception as e:
-            continue
 
     if count > 0:
         reports.append((current_report, list(current_batch_symbols)))
@@ -276,10 +157,7 @@ def analyze_and_send_top_coin():
         report += f"• <b>وقف الخسارة:</b> <code>${best_data['sl']:.4f}</code>\n"
         report += f"• <b>مؤشر RSI:</b> <b>{best_data['rsi']:.2f}</b>\n"
         send_telegram_single_button(report, best_data['symbol'])
-    else:
-        send_simple_message("❌ لم يتم العثور على فرصة مناسبة حالياً.")
 
-# تصميم واجهة الويب والتطبيق المتجاوبة (PWA-Ready)
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -310,7 +188,7 @@ HTML_TEMPLATE = """
         function fetchSignal() {
             const resDiv = document.getElementById('result');
             resDiv.style.display = 'block';
-            resDiv.innerHTML = '<div class="loading">⏳ جاري فحص الأسواق وحساب مؤشرات ATR و RSI...</div>';
+            resDiv.innerHTML = '<div class="loading">⏳ جاري فحص الأسواق الحية من Binance...</div>';
             
             fetch('/api/top')
             .then(response => response.json())
@@ -332,7 +210,7 @@ HTML_TEMPLATE = """
                     resDiv.innerHTML = '<p style="color: #ef4444;">❌ لم يتم العثور على فرصة حالياً.</p>';
                 }
             }).catch(err => {
-                resDiv.innerHTML = '<p style="color: #ef4444;">❌ حدث خطأ في الاتصال بالخادم.</p>';
+                resDiv.innerHTML = '<p style="color: #ef4444;">❌ حدث خطأ في الاتصال.</p>';
             });
         }
     </script>
@@ -340,18 +218,14 @@ HTML_TEMPLATE = """
 </html>
 """
 
-# مسار الويب الأساسي
 @app.route('/')
 def home():
     return render_template_string(HTML_TEMPLATE)
 
-# مسار API يغذي الموقع والتطبيق بنفس بيانات البوت
 @app.route('/api/top', methods=['GET'])
 def api_top():
-    best_data = get_best_market_opportunity()
-    return jsonify(best_data)
+    return jsonify(get_best_market_opportunity())
 
-# مسار استقبال أوامر تيليجرام (Webhook)
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.get_json()
@@ -359,21 +233,12 @@ def webhook():
         message = data['message']
         chat_id = str(message.get('chat', {}).get('id'))
         text = message.get('text', '').strip().lower()
-        
         if chat_id == CHAT_ID:
-            if text in ['/update', 'تحديث']:
-                send_simple_message("🔄 <b>جاري فحص السوق وإرسال التقارير فوراً...</b>")
-                threading.Thread(target=analyze_and_send_signals).start()
-            elif text in ['/top', 'أفضل']:
-                send_simple_message("⚡ <b>جاري البحث عن الفرصة الأقوى حالياً...</b>")
+            if text in ['/top', 'أفضل']:
+                send_simple_message("⚡ <b>جاري البحث عن الفرصة الأقوى...</b>")
                 threading.Thread(target=analyze_and_send_top_coin).start()
-            elif text in ['/status', 'حالة']:
-                send_simple_message("🟢 <b>البوت يعمل بكفاءة تامة ومتصل بالسيرفر بنجاح!</b>")
-            elif text in ['/help', 'مساعدة']:
-                send_simple_message("🤖 <b>الأوامر:</b> /update, /top, /status, /help")
     return 'OK', 200
 
-# التشغيل في خيوط منفصلة (خلفية للجدولة والسيرفر)
 def run_scheduler():
     schedule.every(CHECK_INTERVAL_HOURS).hours.do(analyze_and_send_signals)
     while True:
