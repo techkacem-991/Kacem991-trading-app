@@ -1,3 +1,5 @@
 flask
+yfinance
+pandas
 requests
-gunicorn
+schedule
