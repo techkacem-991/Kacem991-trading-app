@@ -209,7 +209,8 @@ HTML_TEMPLATE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوت إشارات التداول الذكي - جميع العملات</title>
+    <title>بوت إشارات التداول الذكي</title>
+    <link rel="manifest" href="/manifest.json">
     <style>
         body { font-family: Tahoma, sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; text-align: center; margin: 0; }
         .container { max-width: 700px; margin: auto; }
@@ -265,6 +266,26 @@ HTML_TEMPLATE = """
 </body>
 </html>
 """
+
+@app.route('/manifest.json')
+def manifest():
+    manifest_data = {
+        "name": "بوت إشارات التداول الذكي",
+        "short_name": "إشارات التداول",
+        "start_url": "/",
+        "display": "standalone",
+        "background_color": "#0f172a",
+        "theme_color": "#22c55e",
+        "description": "بوت فحص الأسواق وجلب فرص التداول الذكية بدقة عالية.",
+        "icons": [
+            {
+                "src": "https://cdn-icons-png.flaticon.com/512/2910/2910791.png",
+                "sizes": "512x512",
+                "type": "image/png"
+            }
+        ]
+    }
+    return jsonify(manifest_data)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
