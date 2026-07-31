@@ -63,7 +63,7 @@ def get_best_market_opportunity():
     for symbol in SYMBOLS_TO_SCAN:
         try:
             url = f"https://api.binance.com/api/v3/klines?symbol={symbol}&interval=1d&limit=30"
-            res = requests.get(url, timeout=4)
+            res = requests.get(url, timeout=3)
             if res.status_code != 200:
                 continue
             klines = res.json()
@@ -75,7 +75,7 @@ def get_best_market_opportunity():
             lows = [float(k[3]) for k in klines]
             current_price = closes[-1]
 
-            # حساب RSI
+            # حساب RSI بدقة وسرعة
             gains, losses = 0, 0
             for i in range(1, 15):
                 diff = closes[-i] - closes[-i-1]
@@ -113,10 +113,7 @@ def get_best_market_opportunity():
         except:
             continue
 
-    return best_data if best_data else {
-        "symbol": "BTCUSDT", "price": 65000.0, "win": 85.0, 
-        "tp1": 67000.0, "tp2": 69000.0, "sl": 63500.0, "rsi": 52.5
-    }
+    return best_data if best_data else None
 
 def analyze_and_send_signals():
     reports = []
@@ -125,7 +122,7 @@ def analyze_and_send_signals():
     count = 0
 
     for symbol in SYMBOLS_TO_SCAN:
-        data = get_best_market_opportunity() # نموذج مبسط للتقارير الدورية
+        data = get_best_market_opportunity()
         if data:
             current_report += f"📌 <b>العملة: {symbol}</b>\n"
             current_report += f"• <b>السعر:</b> ${data['price']:.4f}\n"
@@ -193,7 +190,7 @@ HTML_TEMPLATE = """
             fetch('/api/top')
             .then(response => response.json())
             .then(data => {
-                if(data.symbol) {
+                if(data && data.symbol) {
                     resDiv.innerHTML = `
                         <h3 style="color: #22c55e; margin-top:0;">🔥 أفضل فرصة تداول حالياً</h3>
                         <div class="item">📌 <b>الزوج / العملة:</b> ${data.symbol}</div>
@@ -207,7 +204,7 @@ HTML_TEMPLATE = """
                         <div class="item">📊 <b>مؤشر القوة النسبية (RSI):</b> ${data.rsi.toFixed(2)}</div>
                     `;
                 } else {
-                    resDiv.innerHTML = '<p style="color: #ef4444;">❌ لم يتم العثور على فرصة حالياً.</p>';
+                    resDiv.innerHTML = '<p style="color: #ef4444;">❌ لم يتم العثور على فرصة، أعد المحاولة.</p>';
                 }
             }).catch(err => {
                 resDiv.innerHTML = '<p style="color: #ef4444;">❌ حدث خطأ في الاتصال.</p>';
@@ -224,7 +221,8 @@ def home():
 
 @app.route('/api/top', methods=['GET'])
 def api_top():
-    return jsonify(get_best_market_opportunity())
+    result = get_best_market_opportunity()
+    return jsonify(result if result else {})
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
