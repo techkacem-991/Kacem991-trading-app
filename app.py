@@ -215,9 +215,8 @@ HTML_TEMPLATE = """
     <style>
         body { 
             font-family: Tahoma, sans-serif; 
-            /* وضع صورة الخلفية وجعلها تغطي الشاشة بالكامل وثابتة */
             background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), 
-                        url('https://res.cloudinary.com/ke7jwn4a/image/upload/v1785552394/22222222222222222222222_fcin7r.jpg') no-repeat center center fixed; 
+                        url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed; 
             background-size: cover;
             color: #f8fafc; 
             padding: 20px; 
@@ -226,8 +225,8 @@ HTML_TEMPLATE = """
         }
         .container { max-width: 700px; margin: auto; }
         .card { 
-            background: rgba(30, 41, 59, 0.85); /* جعل البطاقات شفافة قليلاً لتتخالط مع الخلفية */
-            backdrop-filter: blur(5px); /* تأثير ضبابي جمالي خلف البطاقة */
+            background: rgba(30, 41, 59, 0.85); 
+            backdrop-filter: blur(5px); 
             padding: 15px; 
             border-radius: 12px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
@@ -251,7 +250,6 @@ HTML_TEMPLATE = """
     </div>
 
     <script>
-        // تسجيل Service Worker لجعل التطبيق أسرع وأوثق
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
             .then(() => console.log('Service Worker Registered'))
@@ -309,9 +307,15 @@ def manifest():
         "categories": ["finance", "business", "productivity"],
         "icons": [
             {
-                "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785552394/22222222222222222222222_fcin7r.jpg",
+                "src": "https://cdn-icons-png.flaticon.com/512/2910/2910791.png",
+                "sizes": "192x192",
+                "type": "image/png",
+                "purpose": "any maskable"
+            },
+            {
+                "src": "https://cdn-icons-png.flaticon.com/512/2910/2910791.png",
                 "sizes": "512x512",
-                "type": "image/jpg",
+                "type": "image/png",
                 "purpose": "any maskable"
             }
         ],
