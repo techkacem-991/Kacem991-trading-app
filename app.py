@@ -162,7 +162,6 @@ HTML_TEMPLATE = """
         .btn-top { background: #f59e0b; }
         .btn-sort { background: #8b5cf6; }
         .btn-export { background: #ec4899; }
-        .btn-risk { background: #06b6d4; }
         .btn-conv { background: #10b981; }
         
         .loading { color: #38bdf8; margin-top: 15px; font-weight: bold; font-size: 18px; }
@@ -194,7 +193,6 @@ HTML_TEMPLATE = """
             <button class="btn-custom btn-export" onclick="exportData()">تصدير النتائج 💾</button>
             <button class="btn-custom btn-sort" onclick="sortSignals()">الترتيب حسب نسب النجاح 📈</button>
             <button class="btn-custom btn-top" onclick="fetchTopSignal()">أفضل صفقة 🔥</button>
-            <button class="btn-custom btn-risk" onclick="showRiskCalculator()">إدارة المخاطر 🛡️</button>
             <button class="btn-custom btn-conv" onclick="showCurrencyConverter()">تحويل العملات 💱</button>
         </div>
 
@@ -302,54 +300,6 @@ HTML_TEMPLATE = """
             a.href = url;
             a.download = 'Trading_Report.txt';
             a.click();
-        }
-
-        function showRiskCalculator() {
-            const container = document.getElementById('results-container');
-            container.innerHTML = `
-                <div class="card" style="border-right-color: #06b6d4;">
-                    <h3 style="color: #06b6d4; margin-top:0;">🛡️ حاسبة إدارة المخاطر</h3>
-                    <label>رأس المال الإجمالي ($):</label>
-                    <input type="number" id="risk-capital" value="1000">
-                    
-                    <label>نسبة المخاطرة من المحفظة (%):</label>
-                    <input type="number" id="risk-pct" value="1">
-                    
-                    <label>سعر الدخول ($):</label>
-                    <input type="number" id="risk-entry" value="100">
-                    
-                    <label>سعر وقف الخسارة ($):</label>
-                    <input type="number" id="risk-sl" value="95">
-                    
-                    <button onclick="calculateRisk()" style="background:#06b6d4; margin-top:5px;">احسب حجم الصفقة</button>
-                    <div id="risk-result" style="margin-top: 15px;"></div>
-                </div>
-            `;
-        }
-
-        function calculateRisk() {
-            const capital = parseFloat(document.getElementById('risk-capital').value);
-            const riskPct = parseFloat(document.getElementById('risk-pct').value);
-            const entry = parseFloat(document.getElementById('risk-entry').value);
-            const sl = parseFloat(document.getElementById('risk-sl').value);
-            const resDiv = document.getElementById('risk-result');
-
-            if (!capital || !riskPct || !entry || !sl || entry <= sl) {
-                resDiv.innerHTML = '<p style="color: #ef4444;">❌ تأكد من صحة المدخلات (سعر الدخول يجب أن يكون أكبر من وقف الخسارة للشراء).</p>';
-                return;
-            }
-
-            const riskAmountUSD = capital * (riskPct / 100);
-            const riskPerUnit = entry - sl;
-            const positionSizeUnits = riskAmountUSD / riskPerUnit;
-            const totalPositionValue = positionSizeUnits * entry;
-
-            resDiv.innerHTML = `
-                <hr style="border-color: #334155;">
-                <div class="item" style="color: #38bdf8;">💰 <b>الخسارة بالدولار المسموح بها:</b> $${riskAmountUSD.toFixed(2)}</div>
-                <div class="item" style="color: #38bdf8;">📦 <b>حجم الوحدات (الكمية):</b> ${positionSizeUnits.toFixed(4)}</div>
-                <div class="item" style="color: #64DD17;">💵 <b>إجمالي قيمة الصفقة:</b> $${totalPositionValue.toFixed(2)}</div>
-            `;
         }
 
         function showCurrencyConverter() {
