@@ -12,7 +12,7 @@ SYMBOLS_TO_SCAN = [
     "ZEC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD", "AVAX-USD", "HBAR-USD",
     "DOGE-USD", "AVAX-USD", "LINK-USD", "ADA-USD", "NEAR-USD", "LINK-USD", "ETC-USD",
     "RENDER-USD", "FET-USD", "LTC-USD", "BCH-USD", "BTC-USD", "TRX-USD", "DASH-USD",
-    "ATOM-USD", "ETC-USD", "XLM-USD", "FIL-USD", "ALGO-USD", "ICP-USD","FET-USD"
+    "ATOM-USD", "ETC-USD", "XLM-USD", "FIL-USD", "ALGO-USD", "ICP-USD","UNI-USD"
 ]
 
 def get_all_market_opportunities():
