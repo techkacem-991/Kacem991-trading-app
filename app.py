@@ -92,12 +92,12 @@ def get_all_market_opportunities():
 
             all_results.append({
                 "symbol": symbol,
-                "price": current_price,
-                "win": win_probability,
-                "tp1": tp1,
-                "tp2": tp2,
-                "sl": dynamic_sl,
-                "rsi": last_rsi,
+                "price": float(current_price),
+                "win": float(win_probability),
+                "tp1": float(tp1),
+                "tp2": float(tp2),
+                "sl": float(dynamic_sl),
+                "rsi": float(last_rsi),
                 "r_icon": r_icon,
                 "t_icon": t_icon,
                 "v_icon": v_icon
@@ -258,53 +258,47 @@ HTML_TEMPLATE = """
 
         function fetchTopSignal() {
             const container = document.getElementById('results-container');
-            if (lastMarketData.length === 0) {
-                container.innerHTML = '<div class="loading">⏳ جاري جلب الفحص لتحديد أفضل فرصة...</div>';
-                fetch('/api/all').then(res => res.json()).then(data => {
-                    lastMarketData = data;
-                    showTop(container);
-                });
-            } else {
-                showTop(container);
-            }
-        }
-
-        function showTop(container) {
-            if(lastMarketData.length > 0) {
-                let best = lastMarketData.reduce((prev, current) => (prev.win > current.win) ? prev : current);
-                container.innerHTML = `
-                    <div class="card" style="border-right-color: #f59e0b;">
-                        <h3 style="color: #f59e0b; margin-top:0;">🔥 أفضل فرصة تداول حالياً: ${best.symbol}</h3>
-                        <div class="item">💵 <b>السعر الحالي:</b> $${best.price.toFixed(4)}</div>
-                        <div class="item">🎯 <b>نسبة النجاح المتوقعة:</b> ${best.win}%</div>
-                        <div class="item" style="color: #38bdf8;">📈 <b>الهدف الأول (TP1):</b> $${best.tp1.toFixed(4)}</div>
-                        <div class="item" style="color: #38bdf8;">🚀 <b>الهدف الثاني (TP2):</b> $${best.tp2.toFixed(4)}</div>
-                        <div class="item" style="color: #ef4444;">🛑 <b>وقف الخسارة (SL):</b> $${best.sl.toFixed(4)}</div>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = '<p style="color: #ef4444; margin-top:20px;">❌ لا توجد بيانات متاحة.</p>';
-            }
+            container.innerHTML = '<div class="loading">⏳ جاري تحديد أفضل فرصة تداول...</div>';
+            
+            fetch('/api/top')
+            .then(res => res.json())
+            .then(best => {
+                if(best && best.symbol) {
+                    container.innerHTML = `
+                        <div class="card" style="border-right-color: #f59e0b;">
+                            <h3 style="color: #f59e0b; margin-top:0;">🔥 أفضل فرصة تداول حالياً: ${best.symbol}</h3>
+                            <div class="item">💵 <b>السعر الحالي:</b> $${best.price.toFixed(4)}</div>
+                            <div class="item">🎯 <b>نسبة النجاح المتوقعة:</b> ${best.win}%</div>
+                            <div class="item" style="color: #38bdf8;">📈 <b>الهدف الأول (TP1):</b> $${best.tp1.toFixed(4)}</div>
+                            <div class="item" style="color: #38bdf8;">🚀 <b>الهدف الثاني (TP2):</b> $${best.tp2.toFixed(4)}</div>
+                            <div class="item" style="color: #ef4444;">🛑 <b>وقف الخسارة (SL):</b> $${best.sl.toFixed(4)}</div>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = '<p style="color: #ef4444; margin-top:20px;">❌ لا توجد بيانات متاحة حالياً.</p>';
+                }
+            }).catch(err => {
+                container.innerHTML = '<p style="color: #ef4444; margin-top:20px;">❌ حدث خطأ أثناء جلب أفضل صفقة.</p>';
+            });
         }
 
         function sortSignals() {
             const container = document.getElementById('results-container');
-            if (lastMarketData.length === 0) {
-                container.innerHTML = '<div class="loading">⏳ جاري جلب البيانات وترتيبها...</div>';
-                fetch('/api/all').then(res => res.json()).then(data => {
-                    lastMarketData = data;
-                    lastMarketData.sort((a, b) => b.win - a.win);
-                    renderCards(lastMarketData, container);
-                });
-            } else {
-                lastMarketData.sort((a, b) => b.win - a.win);
-                renderCards(lastMarketData, container);
-            }
+            container.innerHTML = '<div class="loading">⏳ جاري ترتيب الصفقات حسب نسبة النجاح...</div>';
+            
+            fetch('/api/sort')
+            .then(res => res.json())
+            .then(data => {
+                lastMarketData = data;
+                renderCards(data, container);
+            }).catch(err => {
+                container.innerHTML = '<p style="color: #ef4444; margin-top:20px;">❌ حدث خطأ أثناء الترتيب.</p>';
+            });
         }
 
         function exportData() {
             if (lastMarketData.length === 0) {
-                alert('قم بفحص السوق أولاً لتتمكن من تصدير النتائج!');
+                alert('قم بفحص السوق أولاًلتتمكن من تصدير النتائج!');
                 return;
             }
             let textContent = "--- تقرير إشارات التداول الذكي ---\\n\\n";
@@ -342,12 +336,6 @@ def manifest():
                 "sizes": "512x512",
                 "type": "image/png",
                 "purpose": "any maskable"
-            },
-            {
-                "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785554014/copy_of_22222222222222222222222_fcin7r.png",
-                "sizes": "512x512",
-                "type": "image/png",
-                "purpose": "any maskable"
             }
         ],
         "screenshots": [
@@ -357,13 +345,6 @@ def manifest():
                 "type": "image/png",
                 "form_factor": "wide",
                 "label": "لقطة شاشة لتطبيق إشارات التداول"
-            },
-            {
-                "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785554014/copy_of_22222222222222222222222_fcin7r.png",
-                "sizes": "512x512",
-                "type": "image/png",
-                "form_factor": "narrow",
-                "label": "لقطة شاشة للهاتف"
             }
         ]
     }
@@ -401,6 +382,20 @@ def home():
 @app.route('/api/all', methods=['GET'])
 def api_all():
     return jsonify(get_all_market_opportunities())
+
+@app.route('/api/top', methods=['GET'])
+def api_top():
+    results = get_all_market_opportunities()
+    if not results:
+        return jsonify({})
+    best = max(results, key=lambda x: x['win'])
+    return jsonify(best)
+
+@app.route('/api/sort', methods=['GET'])
+def api_sort():
+    results = get_all_market_opportunities()
+    results.sort(key=lambda x: x['win'], reverse=True)
+    return jsonify(results)
 
 def run_http():
     app.run(host='0.0.0.0', port=8080)
