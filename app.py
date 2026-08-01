@@ -137,32 +137,35 @@ HTML_TEMPLATE = """
             text-align: right; 
             border-right: 5px solid #22c55e; 
         }
-        .command-box {
-            background: rgba(15, 23, 42, 0.9);
-            border: 2px solid #38bdf8;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            text-align: right;
-        }
-        input[type="text"] {
-            width: 65%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            background: #1e293b;
-            color: white;
-            font-size: 16px;
-            margin-left: 10px;
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
         }
         button { background: #22c55e; color: white; border: none; padding: 14px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 8px; }
-        .btn-inline { width: auto; display: inline-block; padding: 10px 15px; font-size: 14px; margin: 5px; background: #38bdf8; }
-        .btn-inline:active { background: #0284c7; }
-        button:active { background: #16a34a; }
+        .btn-custom { 
+            flex: 1; 
+            min-width: 140px; 
+            padding: 14px 10px; 
+            font-size: 15px; 
+            font-weight: bold; 
+            border-radius: 8px; 
+            border: none; 
+            cursor: pointer; 
+            color: white; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.1s ease;
+        }
+        .btn-custom:active { transform: scale(0.97); }
+        .btn-top { background: #f59e0b; }
+        .btn-sort { background: #8b5cf6; }
+        .btn-export { background: #ec4899; }
+        
         .loading { color: #38bdf8; margin-top: 15px; font-weight: bold; font-size: 18px; }
         .item { margin: 8px 0; font-size: 14px; }
         h2 { color: #38bdf8; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .help-text { color: #94a3b8; font-size: 13px; margin-top: 8px; text-align: right; }
     </style>
 </head>
 <body>
@@ -170,19 +173,14 @@ HTML_TEMPLATE = """
         <h2>📊 TRADING WITH KACEM</h2>
         <p>اضغط لفحص كافة الأسواق الحية وجلب تقارير العملات كاملة:</p>
         
-        <div class="command-box">
-            <p style="margin-top:0; color:#38bdf8; font-weight:bold;">⌨️ خانة الأوامر النصية:</p>
-            <input type="text" id="commandInput" placeholder="اكتب أمراً (scan, top, sort, export)..." onkeypress="checkEnter(event)">
-            <button class="btn-inline" onclick="executeCommand()">تنفيذ</button>
-            <div style="margin-top: 10px;">
-                <button class="btn-inline" style="background:#f59e0b;" onclick="fetchTopSignal()">🔥 أفضل صفقة (top)</button>
-                <button class="btn-inline" style="background:#8b5cf6;" onclick="sortSignals()">📈 ترتيب النجاح (sort)</button>
-                <button class="btn-inline" style="background:#ec4899;" onclick="exportData()">💾 تصدير (export)</button>
-            </div>
-            <div class="help-text">الأوامر: <b>scan</b> (فحص) | <b>top</b> (أفضل صفقة) | <b>sort</b> (ترتيب) | <b>export</b> (تصدير)</div>
+        <button onclick="fetchAllSignals()">🔍 إفحص السوق الآن</button>
+
+        <div class="action-buttons">
+            <button class="btn-custom btn-export" onclick="exportData()">تصدير 💾 (export)</button>
+            <button class="btn-custom btn-sort" onclick="sortSignals()">ترتيب النجاح 📈 (sort)</button>
+            <button class="btn-custom btn-top" onclick="fetchTopSignal()">أفضل صفقة 🔥 (top)</button>
         </div>
 
-        <button onclick="fetchAllSignals()">🔍 إفحص السوق الآن</button>
         <div id="results-container"></div>
     </div>
 
@@ -193,30 +191,6 @@ HTML_TEMPLATE = """
             navigator.serviceWorker.register('/sw.js')
             .then(() => console.log('Service Worker Registered'))
             .catch((err) => console.log('Service Worker Failed', err));
-        }
-
-        function checkEnter(e) {
-            if (e.key === 'Enter') {
-                executeCommand();
-            }
-        }
-
-        function executeCommand() {
-            const cmd = document.getElementById('commandInput').value.trim().toLowerCase();
-            const container = document.getElementById('results-container');
-            
-            if (cmd === 'scan' || cmd === 'فحص') {
-                fetchAllSignals();
-            } else if (cmd === 'top' || cmd === 'أفضل') {
-                fetchTopSignal();
-            } else if (cmd === 'sort' || cmd === 'ترتيب') {
-                sortSignals();
-            } else if (cmd === 'export' || cmd === 'تصدير') {
-                exportData();
-            } else {
-                container.innerHTML = '<p style="color: #ef4444; margin-top:20px;">❌ أمر غير معروف. الأوامر المتاحة: scan, top, sort, export</p>';
-            }
-            document.getElementById('commandInput').value = '';
         }
 
         function fetchAllSignals() {
@@ -298,7 +272,7 @@ HTML_TEMPLATE = """
 
         function exportData() {
             if (lastMarketData.length === 0) {
-                alert('قم بفحص السوق أولاًلتتمكن من تصدير النتائج!');
+                alert('قم بفحص السوق أولاً لتتمكن من تصدير النتائج!');
                 return;
             }
             let textContent = "--- تقرير إشارات التداول الذكي ---\\n\\n";
