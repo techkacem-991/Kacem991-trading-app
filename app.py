@@ -308,7 +308,7 @@ def manifest():
         "icons": [
             {
                 "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785552394/22222222222222222222222_fcin7r.jpg",
-                "sizes": "192x192",
+                "sizes": "512x512",
                 "type": "image/jpg",
                 "purpose": "any maskable"
             },
