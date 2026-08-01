@@ -211,6 +211,7 @@ HTML_TEMPLATE = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بوت إشارات التداول الذكي</title>
     <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#22c55e">
     <style>
         body { font-family: Tahoma, sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; text-align: center; margin: 0; }
         .container { max-width: 700px; margin: auto; }
@@ -231,6 +232,13 @@ HTML_TEMPLATE = """
     </div>
 
     <script>
+        // تسجيل Service Worker لجعل التطبيق أسرع وأوثق
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+            .then(() => console.log('Service Worker Registered'))
+            .catch((err) => console.log('Service Worker Failed', err));
+        }
+
         function fetchAllSignals() {
             const container = document.getElementById('results-container');
             container.innerHTML = '<div class="loading">⏳ جاري فحص جميع العملات وإعداد التقارير... يرجى الانتظار</div>';
@@ -270,22 +278,54 @@ HTML_TEMPLATE = """
 @app.route('/manifest.json')
 def manifest():
     manifest_data = {
-        "name": "بوت إشارات التداول الذكي",
-        "short_name": "إشارات التداول",
+        "id": "/",
+        "name": "TRADING WITH KACEM",
+        v"short_name": "TRADING WITH KACEM",
         "start_url": "/",
         "display": "standalone",
+        "orientation": "portrait",
         "background_color": "#0f172a",
         "theme_color": "#22c55e",
         "description": "بوت فحص الأسواق وجلب فرص التداول الذكية بدقة عالية.",
+        "categories": ["finance", "business", "productivity"],
         "icons": [
             {
                 "src": "https://cdn-icons-png.flaticon.com/512/2910/2910791.png",
                 "sizes": "512x512",
-                "type": "image/png"
+                "type": "image/png",
+                "purpose": "any maskable"
+            }
+        ],
+        "screenshots": [
+            {
+                "src": "https://cdn-icons-png.flaticon.com/512/2910/2910791.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "form_factor": "wide",
+                "label": "لقطة شاشة لتطبيق إشارات التداول"
+            },
+            {
+                "src": "https://cdn-icons-png.flaticon.com/512/2910/2910791.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "form_factor": "narrow",
+                "label": "لقطة شاشة للهاتف"
             }
         ]
     }
     return jsonify(manifest_data)
+
+@app.route('/sw.js')
+def service_worker():
+    sw_code = """
+    self.addEventListener('install', (e) => {
+        console.log('Service Worker Installed');
+    });
+    self.addEventListener('fetch', (e) => {
+        e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+    });
+    """
+    return sw_code, 200, {'Content-Type': 'application/javascript'}
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
