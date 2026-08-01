@@ -216,7 +216,7 @@ HTML_TEMPLATE = """
         body { 
             font-family: Tahoma, sans-serif; 
             background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), 
-                        url('https://res.cloudinary.com/ke7jwn4a/image/upload/v1785552394/22222222222222222222222_fcin7r.jpg') no-repeat center center fixed; 
+                        url('https://res.cloudinary.com/ke7jwn4a/image/upload/v1785554014/copy_of_22222222222222222222222_fcin7r.png') no-repeat center center fixed; 
             background-size: cover;
             color: #f8fafc; 
             padding: 20px; 
@@ -307,30 +307,30 @@ def manifest():
         "categories": ["finance", "business", "productivity"],
         "icons": [
             {
-                "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785552394/22222222222222222222222_fcin7r.jpg",
+                "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785554014/copy_of_22222222222222222222222_fcin7r.png",
                 "sizes": "512x512",
-                "type": "image/jpeg",
+                "type": "image/png",
                 "purpose": "any maskable"
             },
             {
-                "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785552394/22222222222222222222222_fcin7r.jpg",
+                "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785554014/copy_of_22222222222222222222222_fcin7r.png",
                 "sizes": "512x512",
-                "type": "image/jpeg",
+                "type": "image/png",
                 "purpose": "any maskable"
             }
         ],
         "screenshots": [
             {
-                "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785552394/22222222222222222222222_fcin7r.jpg",
+                "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785554014/copy_of_22222222222222222222222_fcin7r.png",
                 "sizes": "512x512",
-                "type": "image/jpeg",
+                "type": "image/png",
                 "form_factor": "wide",
                 "label": "لقطة شاشة لتطبيق إشارات التداول"
             },
             {
-                "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785552394/22222222222222222222222_fcin7r.jpg",
+                "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785554014/copy_of_22222222222222222222222_fcin7r.png",
                 "sizes": "512x512",
-                "type": "image/jpeg",
+                "type": "image/png",
                 "form_factor": "narrow",
                 "label": "لقطة شاشة للهاتف"
             }
