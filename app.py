@@ -162,10 +162,25 @@ HTML_TEMPLATE = """
         .btn-top { background: #f59e0b; }
         .btn-sort { background: #8b5cf6; }
         .btn-export { background: #ec4899; }
+        .btn-risk { background: #06b6d4; }
+        .btn-conv { background: #10b981; }
         
         .loading { color: #38bdf8; margin-top: 15px; font-weight: bold; font-size: 18px; }
         .item { margin: 8px 0; font-size: 14px; }
         h2 { color: #38bdf8; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 12px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid #334155;
+            color: white;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        label { font-size: 13px; color: #38bdf8; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -179,6 +194,8 @@ HTML_TEMPLATE = """
             <button class="btn-custom btn-export" onclick="exportData()">تصدير النتائج 💾</button>
             <button class="btn-custom btn-sort" onclick="sortSignals()">الترتيب حسب نسب النجاح 📈</button>
             <button class="btn-custom btn-top" onclick="fetchTopSignal()">أفضل صفقة 🔥</button>
+            <button class="btn-custom btn-risk" onclick="showRiskCalculator()">إدارة المخاطر 🛡️</button>
+            <button class="btn-custom btn-conv" onclick="showCurrencyConverter()">تحويل العملات 💱</button>
         </div>
 
         <div id="results-container"></div>
@@ -286,6 +303,126 @@ HTML_TEMPLATE = """
             a.download = 'Trading_Report.txt';
             a.click();
         }
+
+        function showRiskCalculator() {
+            const container = document.getElementById('results-container');
+            container.innerHTML = `
+                <div class="card" style="border-right-color: #06b6d4;">
+                    <h3 style="color: #06b6d4; margin-top:0;">🛡️ حاسبة إدارة المخاطر</h3>
+                    <label>رأس المال الإجمالي ($):</label>
+                    <input type="number" id="risk-capital" value="1000">
+                    
+                    <label>نسبة المخاطرة من المحفظة (%):</label>
+                    <input type="number" id="risk-pct" value="1">
+                    
+                    <label>سعر الدخول ($):</label>
+                    <input type="number" id="risk-entry" value="100">
+                    
+                    <label>سعر وقف الخسارة ($):</label>
+                    <input type="number" id="risk-sl" value="95">
+                    
+                    <button onclick="calculateRisk()" style="background:#06b6d4; margin-top:5px;">احسب حجم الصفقة</button>
+                    <div id="risk-result" style="margin-top: 15px;"></div>
+                </div>
+            `;
+        }
+
+        function calculateRisk() {
+            const capital = parseFloat(document.getElementById('risk-capital').value);
+            const riskPct = parseFloat(document.getElementById('risk-pct').value);
+            const entry = parseFloat(document.getElementById('risk-entry').value);
+            const sl = parseFloat(document.getElementById('risk-sl').value);
+            const resDiv = document.getElementById('risk-result');
+
+            if (!capital || !riskPct || !entry || !sl || entry <= sl) {
+                resDiv.innerHTML = '<p style="color: #ef4444;">❌ تأكد من صحة المدخلات (سعر الدخول يجب أن يكون أكبر من وقف الخسارة للشراء).</p>';
+                return;
+            }
+
+            const riskAmountUSD = capital * (riskPct / 100);
+            const riskPerUnit = entry - sl;
+            const positionSizeUnits = riskAmountUSD / riskPerUnit;
+            const totalPositionValue = positionSizeUnits * entry;
+
+            resDiv.innerHTML = `
+                <hr style="border-color: #334155;">
+                <div class="item" style="color: #38bdf8;">💰 <b>الخسارة بالدولار المسموح بها:</b> $${riskAmountUSD.toFixed(2)}</div>
+                <div class="item" style="color: #38bdf8;">📦 <b>حجم الوحدات (الكمية):</b> ${positionSizeUnits.toFixed(4)}</div>
+                <div class="item" style="color: #64DD17;">💵 <b>إجمالي قيمة الصفقة:</b> $${totalPositionValue.toFixed(2)}</div>
+            `;
+        }
+
+        function showCurrencyConverter() {
+            const container = document.getElementById('results-container');
+            container.innerHTML = `
+                <div class="card" style="border-right-color: #10b981;">
+                    <h3 style="color: #10b981; margin-top:0;">💱 تحويل العملات العالمي</h3>
+                    <label>المبلغ:</label>
+                    <input type="number" id="conv-amount" value="100">
+                    
+                    <label>من عملة:</label>
+                    <select id="conv-from">
+                        <option value="USD" selected>USD - الدولار الأمريكي</option>
+                        <option value="EUR">EUR - اليورو</option>
+                        <option value="GBP">GBP - الجنيه الإسترليني</option>
+                        <option value="SAR">SAR - الريال السعودي</option>
+                        <option value="AED">AED - الدرهم الإماراتي</option>
+                        <option value="EGP">EGP - الجنيه المصري</option>
+                        <option value="DZD">DZD - الدينار الجزائري</option>
+                        <option value="MAD">MAD - الدرهم المغربي</option>
+                        <option value="JOD">JOD - الدينار الأردني</option>
+                        <option value="KWD">KWD - الدينار الكويتي</option>
+                    </select>
+                    
+                    <label>إلى عملة:</label>
+                    <select id="conv-to">
+                        <option value="USD">USD - الدولار الأمريكي</option>
+                        <option value="EUR" selected>EUR - اليورو</option>
+                        <option value="GBP">GBP - الجنيه الإسترليني</option>
+                        <option value="SAR">SAR - الريال السعودي</option>
+                        <option value="AED">AED - الدرهم الإماراتي</option>
+                        <option value="EGP">EGP - الجنيه المصري</option>
+                        <option value="DZD">DZD - الدينار الجزائري</option>
+                        <option value="MAD">MAD - الدرهم المغربي</option>
+                        <option value="JOD">JOD - الدينار الأردني</option>
+                        <option value="KWD">KWD - الدينار الكويتي</option>
+                    </select>
+                    
+                    <button onclick="convertCurrency()" style="background:#10b981; margin-top:5px;">تحويل العملة</button>
+                    <div id="conv-result" style="margin-top: 15px;"></div>
+                </div>
+            `;
+        }
+
+        function convertCurrency() {
+            const amount = parseFloat(document.getElementById('conv-amount').value);
+            const from = document.getElementById('conv-from').value;
+            const to = document.getElementById('conv-to').value;
+            const resDiv = document.getElementById('conv-result');
+
+            if (!amount) {
+                resDiv.innerHTML = '<p style="color: #ef4444;">❌ أدخل مبلغاً صحيحاً.</p>';
+                return;
+            }
+
+            resDiv.innerHTML = '<div style="color: #38bdf8;">⏳ جاري جلب أسعار الصرف...</div>';
+
+            fetch(`/api/convert?from=${from}&to=${to}&amount=${amount}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    resDiv.innerHTML = `
+                        <hr style="border-color: #334155;">
+                        <div class="item" style="font-size: 16px; color: #64DD17;"><b>النتيجة:</b> ${data.result.toFixed(4)} ${to}</div>
+                        <div class="item" style="font-size: 12px; color: #94a3b8;">سعر الصرف: 1 ${from} = ${data.rate.toFixed(4)} ${to}</div>
+                    `;
+                } else {
+                    resDiv.innerHTML = '<p style="color: #ef4444;">❌ فشل جلب أسعار الصرف.</p>';
+                }
+            }).catch(err => {
+                resDiv.innerHTML = '<p style="color: #ef4444;">❌ حدث خطأ في الاتصال.</p>';
+            });
+        }
     </script>
 </body>
 </html>
@@ -370,6 +507,29 @@ def api_sort():
     results = get_all_market_opportunities()
     results.sort(key=lambda x: x['win'], reverse=True)
     return jsonify(results)
+
+@app.route('/api/convert', methods=['GET'])
+def api_convert():
+    from_curr = request.args.get('from', 'USD').upper()
+    to_curr = request.args.get('to', 'EUR').upper()
+    try:
+        amount = float(request.args.get('amount', 1))
+    except ValueError:
+        amount = 1.0
+
+    try:
+        url = f"https://api.exchangerate-api.com/v4/latest/{from_curr}"
+        resp = requests.get(url, timeout=5)
+        data = resp.json()
+        rate = data['rates'].get(to_curr, 1.0)
+        result = amount * rate
+        return jsonify({
+            "success": True,
+            "rate": float(rate),
+            "result": float(result)
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
 
 def run_http():
     app.run(host='0.0.0.0', port=8080)
