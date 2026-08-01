@@ -9,10 +9,10 @@ import schedule
 app = Flask('')
 
 SYMBOLS_TO_SCAN = [
-    "ZEC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD",
-    "DOGE-USD", "AVAX-USD", "LINK-USD", "ADA-USD", "NEAR-USD",
-    "RENDER-USD", "FET-USD", "LTC-USD", "BCH-USD", "BTC-USD",
-    "ATOM-USD", "ETC-USD", "XLM-USD", "FIL-USD", "ALGO-USD", "ICP-USD"
+    "ZEC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD", "AVAX-USD", "HBAR-USD",
+    "DOGE-USD", "AVAX-USD", "LINK-USD", "ADA-USD", "NEAR-USD", "LINK-USD", "ETC-USD",
+    "RENDER-USD", "FET-USD", "LTC-USD", "BCH-USD", "BTC-USD", "TRX-USD", "DASH-USD",
+    "ATOM-USD", "ETC-USD", "XLM-USD", "FIL-USD", "ALGO-USD", "ICP-USD","FET-USD"
 ]
 
 def get_all_market_opportunities():
@@ -185,7 +185,7 @@ HTML_TEMPLATE = """
 <body>
     <div class="container">
         <h2>📊 TRADING WITH KACEM</h2>
-        <p>صفقات تداول فورية (سبوت) لأكثر من 20 عملة رقمية من الأنشط في السوق🔥</p>
+        <p>صفقات تداول فورية (سبوت) لأكثر من 25 عملة رقمية من الأنشط في السوق🔥</p>
         
         <button onclick="fetchAllSignals()">إفحص السوق الآن 🔍</button>
 
