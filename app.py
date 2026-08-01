@@ -309,7 +309,7 @@ def manifest():
             {
                 "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785552394/22222222222222222222222_fcin7r.jpg",
                 "sizes": "512x512",
-                "type": "image/jpg",
+                "type": "image/jpeg",
                 "purpose": "any maskable"
             },
             {
