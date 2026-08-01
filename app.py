@@ -468,10 +468,24 @@ def api_convert():
         amount = 1.0
 
     try:
-        url = f"https://api.exchangerate-api.com/v4/latest/{from_curr}"
-        resp = requests.get(url, timeout=5)
-        data = resp.json()
-        rate = data['rates'].get(to_curr, 1.0)
+        # استخدام Yahoo Finance لجلب زوج العملات العالمي مباشرة (مثال: EURUSD=X أو EURDZD=X)
+        # ملاحظة: يتم عكس الرمز أو ضبطه بناءً على أزواج الفوركس المتاحة
+        pair = f"{from_curr}{to_curr}=X"
+        ticker = yf.Ticker(pair)
+        hist = ticker.history(period="1d", interval="1m")
+        
+        if not hist.empty:
+            rate = float(hist['Close'].iloc[-1])
+        else:
+            # محاولة العكس إذا لم يتوفر الزوج مباشرة
+            pair_inv = f"{to_curr}{from_curr}=X"
+            ticker_inv = yf.Ticker(pair_inv)
+            hist_inv = ticker_inv.history(period="1d", interval="1m")
+            if not hist_inv.empty:
+                rate = 1.0 / float(hist_inv['Close'].iloc[-1])
+            else:
+                rate = 1.0
+
         result = amount * rate
         return jsonify({
             "success": True,
