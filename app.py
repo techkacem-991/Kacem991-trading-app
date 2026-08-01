@@ -114,7 +114,7 @@ HTML_TEMPLATE = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRADING WITH KACEM</title>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#33779c">
+    <meta name="theme-color" content="#22c55e">
     <style>
         body { 
             font-family: Tahoma, sans-serif; 
@@ -135,7 +135,7 @@ HTML_TEMPLATE = """
             box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
             margin-top: 15px; 
             text-align: right; 
-            border-right: 5px solid #33779c; 
+            border-right: 5px solid #22c55e; 
         }
         .action-buttons {
             display: flex;
@@ -144,7 +144,7 @@ HTML_TEMPLATE = """
             margin: 15px 0;
             flex-wrap: wrap;
         }
-        button { background: #33779c; color: white; border: none; padding: 14px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 8px; }
+        button { background: #22c55e; color: white; border: none; padding: 14px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 8px; }
         .btn-custom { 
             flex: 1; 
             min-width: 140px; 
@@ -301,7 +301,7 @@ def manifest():
         "display": "standalone",
         "orientation": "portrait",
         "background_color": "#0f172a",
-        "theme_color": "#22c55e",
+        "theme_color": "#33779c",
         "description": "بوت فحص الأسواق وجلب فرص التداول الذكية بدقة عالية.",
         "categories": ["finance", "business", "productivity"],
         "icons": [
