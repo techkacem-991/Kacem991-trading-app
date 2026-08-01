@@ -280,7 +280,7 @@ def manifest():
     manifest_data = {
         "id": "/",
         "name": "TRADING WITH KACEM",
-        v"short_name": "TRADING WITH KACEM",
+        "short_name": "TRADING WITH KACEM",
         "start_url": "/",
         "display": "standalone",
         "orientation": "portrait",
