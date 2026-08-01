@@ -114,7 +114,7 @@ HTML_TEMPLATE = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRADING WITH KACEM</title>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#22c55e">
+    <meta name="theme-color" content="#33779c">
     <style>
         body { 
             font-family: Tahoma, sans-serif; 
