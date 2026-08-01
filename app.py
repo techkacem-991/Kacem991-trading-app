@@ -176,9 +176,9 @@ HTML_TEMPLATE = """
         <button onclick="fetchAllSignals()">🔍 إفحص السوق الآن</button>
 
         <div class="action-buttons">
-            <button class="btn-custom btn-export" onclick="exportData()">تصدير 💾 (export)</button>
-            <button class="btn-custom btn-sort" onclick="sortSignals()">ترتيب النجاح 📈 (sort)</button>
-            <button class="btn-custom btn-top" onclick="fetchTopSignal()">أفضل صفقة 🔥 (top)</button>
+            <button class="btn-custom btn-export" onclick="exportData()">تصدير النتائج 💾</button>
+            <button class="btn-custom btn-sort" onclick="sortSignals()">الترتيب حسب نسب النجاح 📈</button>
+            <button class="btn-custom btn-top" onclick="fetchTopSignal()">أفضل صفقة 🔥</button>
         </div>
 
         <div id="results-container"></div>
