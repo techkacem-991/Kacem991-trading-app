@@ -213,14 +213,33 @@ HTML_TEMPLATE = """
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#22c55e">
     <style>
-        body { font-family: Tahoma, sans-serif; background: #0f172a; color: #f8fafc; padding: 20px; text-align: center; margin: 0; }
+        body { 
+            font-family: Tahoma, sans-serif; 
+            /* وضع صورة الخلفية وجعلها تغطي الشاشة بالكامل وثابتة */
+            background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), 
+                        url('https://ibb.co/jk3T2D5C') no-repeat center center fixed; 
+            background-size: cover;
+            color: #f8fafc; 
+            padding: 20px; 
+            text-align: center; 
+            margin: 0; 
+        }
         .container { max-width: 700px; margin: auto; }
-        .card { background: #1e293b; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); margin-top: 15px; text-align: right; border-right: 5px solid #22c55e; }
+        .card { 
+            background: rgba(30, 41, 59, 0.85); /* جعل البطاقات شفافة قليلاً لتتخالط مع الخلفية */
+            backdrop-filter: blur(5px); /* تأثير ضبابي جمالي خلف البطاقة */
+            padding: 15px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+            margin-top: 15px; 
+            text-align: right; 
+            border-right: 5px solid #22c55e; 
+        }
         button { background: #22c55e; color: white; border: none; padding: 14px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
         button:active { background: #16a34a; }
         .loading { color: #38bdf8; margin-top: 15px; font-weight: bold; font-size: 18px; }
         .item { margin: 8px 0; font-size: 14px; }
-        h2 { color: #38bdf8; }
+        h2 { color: #38bdf8; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
