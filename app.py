@@ -313,24 +313,24 @@ def manifest():
                 "purpose": "any maskable"
             },
             {
-                "src": "https://cdn-icons-png.flaticon.com/512/2910/2910791.png",
+                "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785552394/22222222222222222222222_fcin7r.jpg",
                 "sizes": "512x512",
-                "type": "image/png",
+                "type": "image/jpeg",
                 "purpose": "any maskable"
             }
         ],
         "screenshots": [
             {
-                "src": "https://cdn-icons-png.flaticon.com/512/2910/2910791.png",
+                "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785552394/22222222222222222222222_fcin7r.jpg",
                 "sizes": "512x512",
-                "type": "image/png",
+                "type": "image/jpeg",
                 "form_factor": "wide",
                 "label": "لقطة شاشة لتطبيق إشارات التداول"
             },
             {
-                "src": "https://cdn-icons-png.flaticon.com/512/2910/2910791.png",
+                "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785552394/22222222222222222222222_fcin7r.jpg",
                 "sizes": "512x512",
-                "type": "image/png",
+                "type": "image/jpeg",
                 "form_factor": "narrow",
                 "label": "لقطة شاشة للهاتف"
             }
