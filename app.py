@@ -187,7 +187,7 @@ HTML_TEMPLATE = """
         <h2>📊 TRADING WITH KACEM</h2>
         <p>صفقات تداول فورية (سبوت) لأكثر من 20 عملة رقمية من الأنشط في السوق🔥</p>
         
-        <button onclick="fetchAllSignals()">🔍 إفحص السوق الآن</button>
+        <button onclick="fetchAllSignals()">إفحص السوق الآن🔍</button>
 
         <div class="action-buttons">
             <button class="btn-custom btn-export" onclick="exportData()">تصدير النتائج 💾</button>
