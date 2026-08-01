@@ -162,7 +162,7 @@ HTML_TEMPLATE = """
         .btn-top { background: #f59e0b; }
         .btn-sort { background: #8b5cf6; }
         .btn-export { background: #ec4899; }
-        .btn-conv { background: #10b981; }
+        .btn-conv { background: #33779c; }
         
         .loading { color: #38bdf8; margin-top: 15px; font-weight: bold; font-size: 18px; }
         .item { margin: 8px 0; font-size: 14px; }
@@ -306,7 +306,7 @@ HTML_TEMPLATE = """
             const container = document.getElementById('results-container');
             container.innerHTML = `
                 <div class="card" style="border-right-color: #10b981;">
-                    <h3 style="color: #10b981; margin-top:0;">💱 تحويل العملات العالمي</h3>
+                    <h3 style="color: #10b981; margin-top:0;">💱 تحويل العملات العالمية بسعر البنك</h3>
                     <label>المبلغ:</label>
                     <input type="number" id="conv-amount" value="100">
                     
