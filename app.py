@@ -216,7 +216,7 @@ HTML_TEMPLATE = """
         body { 
             font-family: Tahoma, sans-serif; 
             background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), 
-                        url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed; 
+                        url('https://res.cloudinary.com/ke7jwn4a/image/upload/v1785552394/22222222222222222222222_fcin7r.jpg') no-repeat center center fixed; 
             background-size: cover;
             color: #f8fafc; 
             padding: 20px; 
@@ -307,9 +307,9 @@ def manifest():
         "categories": ["finance", "business", "productivity"],
         "icons": [
             {
-                "src": "https://cdn-icons-png.flaticon.com/512/2910/2910791.png",
+                "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785552394/22222222222222222222222_fcin7r.jpg",
                 "sizes": "192x192",
-                "type": "image/png",
+                "type": "image/jpg",
                 "purpose": "any maskable"
             },
             {
