@@ -135,7 +135,7 @@ HTML_TEMPLATE = """
             box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
             margin-top: 15px; 
             text-align: right; 
-            border-right: 5px solid #22c55e; 
+            border-right: 5px solid #33779c; 
         }
         .action-buttons {
             display: flex;
@@ -144,7 +144,7 @@ HTML_TEMPLATE = """
             margin: 15px 0;
             flex-wrap: wrap;
         }
-        button { background: #22c55e; color: white; border: none; padding: 14px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 8px; }
+        button { background: #33779c; color: white; border: none; padding: 14px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 8px; }
         .btn-custom { 
             flex: 1; 
             min-width: 140px; 
