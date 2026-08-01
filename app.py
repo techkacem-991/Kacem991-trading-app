@@ -8,16 +8,12 @@ import schedule
 
 app = Flask('')
 
-TELEGRAM_TOKEN = "8968850415:AAG9DwLeyHQ7iNuLmISdhnHnSh7m6us_PgQ"
-CHAT_ID = "5723285644"
-
 SYMBOLS_TO_SCAN = [
     "ZEC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD",
     "DOGE-USD", "AVAX-USD", "LINK-USD", "ADA-USD", "NEAR-USD",
     "RENDER-USD", "FET-USD", "LTC-USD", "BCH-USD", "BTC-USD",
     "ATOM-USD", "ETC-USD", "XLM-USD", "FIL-USD", "ALGO-USD", "ICP-USD"
 ]
-CHECK_INTERVAL_HOURS = 4
 
 def get_all_market_opportunities():
     all_results = []
@@ -123,7 +119,7 @@ HTML_TEMPLATE = """
         body { 
             font-family: Tahoma, sans-serif; 
             background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), 
-                        url('https://res.cloudinary.com/ke7jwn4a/image/upload/v1785554014/copy_of_22222222222222222222222_fcin7r.png') no-repeat center center fixed; 
+                url('https://res.cloudinary.com/ke7jwn4a/image/upload/v1785554014/copy_of_22222222222222222222222_fcin7r.png') no-repeat center center fixed; 
             background-size: cover;
             color: #f8fafc; 
             padding: 20px; 
@@ -141,26 +137,86 @@ HTML_TEMPLATE = """
             text-align: right; 
             border-right: 5px solid #22c55e; 
         }
-        button { background: #22c55e; color: white; border: none; padding: 14px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
+        .command-box {
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #38bdf8;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        input[type="text"] {
+            width: 65%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: #1e293b;
+            color: white;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+        button { background: #22c55e; color: white; border: none; padding: 14px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 8px; }
+        .btn-inline { width: auto; display: inline-block; padding: 10px 15px; font-size: 14px; margin: 5px; background: #38bdf8; }
+        .btn-inline:active { background: #0284c7; }
         button:active { background: #16a34a; }
         .loading { color: #38bdf8; margin-top: 15px; font-weight: bold; font-size: 18px; }
         .item { margin: 8px 0; font-size: 14px; }
         h2 { color: #38bdf8; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .help-text { color: #94a3b8; font-size: 13px; margin-top: 8px; text-align: right; }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>📊 TRADING WITH KACEM</h2>
         <p>اضغط لفحص كافة الأسواق الحية وجلب تقارير العملات كاملة:</p>
+        
+        <div class="command-box">
+            <p style="margin-top:0; color:#38bdf8; font-weight:bold;">⌨️ خانة الأوامر النصية:</p>
+            <input type="text" id="commandInput" placeholder="اكتب أمراً (scan, top, sort, export)..." onkeypress="checkEnter(event)">
+            <button class="btn-inline" onclick="executeCommand()">تنفيذ</button>
+            <div style="margin-top: 10px;">
+                <button class="btn-inline" style="background:#f59e0b;" onclick="fetchTopSignal()">🔥 أفضل صفقة (top)</button>
+                <button class="btn-inline" style="background:#8b5cf6;" onclick="sortSignals()">📈 ترتيب النجاح (sort)</button>
+                <button class="btn-inline" style="background:#ec4899;" onclick="exportData()">💾 تصدير (export)</button>
+            </div>
+            <div class="help-text">الأوامر: <b>scan</b> (فحص) | <b>top</b> (أفضل صفقة) | <b>sort</b> (ترتيب) | <b>export</b> (تصدير)</div>
+        </div>
+
         <button onclick="fetchAllSignals()">🔍 إفحص السوق الآن</button>
         <div id="results-container"></div>
     </div>
 
     <script>
+        let lastMarketData = [];
+
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
             .then(() => console.log('Service Worker Registered'))
             .catch((err) => console.log('Service Worker Failed', err));
+        }
+
+        function checkEnter(e) {
+            if (e.key === 'Enter') {
+                executeCommand();
+            }
+        }
+
+        function executeCommand() {
+            const cmd = document.getElementById('commandInput').value.trim().toLowerCase();
+            const container = document.getElementById('results-container');
+            
+            if (cmd === 'scan' || cmd === 'فحص') {
+                fetchAllSignals();
+            } else if (cmd === 'top' || cmd === 'أفضل') {
+                fetchTopSignal();
+            } else if (cmd === 'sort' || cmd === 'ترتيب') {
+                sortSignals();
+            } else if (cmd === 'export' || cmd === 'تصدير') {
+                exportData();
+            } else {
+                container.innerHTML = '<p style="color: #ef4444; margin-top:20px;">❌ أمر غير معروف. الأوامر المتاحة: scan, top, sort, export</p>';
+            }
+            document.getElementById('commandInput').value = '';
         }
 
         function fetchAllSignals() {
@@ -170,29 +226,97 @@ HTML_TEMPLATE = """
             fetch('/api/all')
             .then(response => response.json())
             .then(data => {
-                if(data && data.length > 0) {
-                    let html = '';
-                    data.forEach(res => {
-                        html += `
-                            <div class="card">
-                                <h3 style="color: #64DD17; margin-top:0;">📌 العملة: ${res.symbol}</h3>
-                                <div class="item">💵 <b>السعر الحالي:</b> $${res.price.toFixed(4)}</div>
-                                <div class="item">🎯 <b>نسبة النجاح المتوقعة:</b> ${res.win}%</div>
-                                <div class="item" style="color: #38bdf8;">📈 <b>الهدف الأول (TP1):</b> $${res.tp1.toFixed(4)}</div>
-                                <div class="item" style="color: #38bdf8;">🚀 <b>الهدف الثاني (TP2):</b> $${res.tp2.toFixed(4)}</div>
-                                <div class="item" style="color: #ef4444;">🛑 <b>وقف الخسارة (SL):</b> $${res.sl.toFixed(4)}</div>
-                                <div class="item">📊 <b>مؤشر RSI:</b> ${res.rsi.toFixed(2)}</div>
-                                <div class="item">🔍 <b>الشروط المتقدمة:</b> RSI ${res.r_icon} | الاتجاه ${res.t_icon} | السيولة ${res.v_icon}</div>
-                            </div>
-                        `;
-                    });
-                    container.innerHTML = html;
-                } else {
-                    container.innerHTML = '<p style="color: #ef4444; margin-top:20px;">❌ لم يتم العثور على بيانات، أعد المحاولة.</p>';
-                }
+                lastMarketData = data;
+                renderCards(data, container);
             }).catch(err => {
                 container.innerHTML = '<p style="color: #ef4444; margin-top:20px;">❌ حدث خطأ في الاتصال بالسيرفر.</p>';
             });
+        }
+
+        function renderCards(data, container) {
+            if(data && data.length > 0) {
+                let html = '';
+                data.forEach(res => {
+                    html += `
+                        <div class="card">
+                            <h3 style="color: #64DD17; margin-top:0;">📌 العملة: ${res.symbol}</h3>
+                            <div class="item">💵 <b>السعر الحالي:</b> $${res.price.toFixed(4)}</div>
+                            <div class="item">🎯 <b>نسبة النجاح المتوقعة:</b> ${res.win}%</div>
+                            <div class="item" style="color: #38bdf8;">📈 <b>الهدف الأول (TP1):</b> $${res.tp1.toFixed(4)}</div>
+                            <div class="item" style="color: #38bdf8;">🚀 <b>الهدف الثاني (TP2):</b> $${res.tp2.toFixed(4)}</div>
+                            <div class="item" style="color: #ef4444;">🛑 <b>وقف الخسارة (SL):</b> $${res.sl.toFixed(4)}</div>
+                            <div class="item">📊 <b>مؤشر RSI:</b> ${res.rsi.toFixed(2)}</div>
+                            <div class="item">🔍 <b>الشروط المتقدمة:</b> RSI ${res.r_icon} | الاتجاه ${res.t_icon} | السيولة ${res.v_icon}</div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = '<p style="color: #ef4444; margin-top:20px;">❌ لم يتم العثور على بيانات، أعد المحاولة.</p>';
+            }
+        }
+
+        function fetchTopSignal() {
+            const container = document.getElementById('results-container');
+            if (lastMarketData.length === 0) {
+                container.innerHTML = '<div class="loading">⏳ جاري جلب الفحص لتحديد أفضل فرصة...</div>';
+                fetch('/api/all').then(res => res.json()).then(data => {
+                    lastMarketData = data;
+                    showTop(container);
+                });
+            } else {
+                showTop(container);
+            }
+        }
+
+        function showTop(container) {
+            if(lastMarketData.length > 0) {
+                let best = lastMarketData.reduce((prev, current) => (prev.win > current.win) ? prev : current);
+                container.innerHTML = `
+                    <div class="card" style="border-right-color: #f59e0b;">
+                        <h3 style="color: #f59e0b; margin-top:0;">🔥 أفضل فرصة تداول حالياً: ${best.symbol}</h3>
+                        <div class="item">💵 <b>السعر الحالي:</b> $${best.price.toFixed(4)}</div>
+                        <div class="item">🎯 <b>نسبة النجاح المتوقعة:</b> ${best.win}%</div>
+                        <div class="item" style="color: #38bdf8;">📈 <b>الهدف الأول (TP1):</b> $${best.tp1.toFixed(4)}</div>
+                        <div class="item" style="color: #38bdf8;">🚀 <b>الهدف الثاني (TP2):</b> $${best.tp2.toFixed(4)}</div>
+                        <div class="item" style="color: #ef4444;">🛑 <b>وقف الخسارة (SL):</b> $${best.sl.toFixed(4)}</div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = '<p style="color: #ef4444; margin-top:20px;">❌ لا توجد بيانات متاحة.</p>';
+            }
+        }
+
+        function sortSignals() {
+            const container = document.getElementById('results-container');
+            if (lastMarketData.length === 0) {
+                container.innerHTML = '<div class="loading">⏳ جاري جلب البيانات وترتيبها...</div>';
+                fetch('/api/all').then(res => res.json()).then(data => {
+                    lastMarketData = data;
+                    lastMarketData.sort((a, b) => b.win - a.win);
+                    renderCards(lastMarketData, container);
+                });
+            } else {
+                lastMarketData.sort((a, b) => b.win - a.win);
+                renderCards(lastMarketData, container);
+            }
+        }
+
+        function exportData() {
+            if (lastMarketData.length === 0) {
+                alert('قم بفحص السوق أولاً لتتمكن من تصدير النتائج!');
+                return;
+            }
+            let textContent = "--- تقرير إشارات التداول الذكي ---\\n\\n";
+            lastMarketData.forEach(res => {
+                textContent += `العملة: ${res.symbol}\\nالسعر: ${res.price}\\nنسبة النجاح: ${res.win}%\\nالهدف الأول: ${res.tp1}\\nالهدف الثاني: ${res.tp2}\\nوقف الخسارة: ${res.sl}\\n-------------------\\n`;
+            });
+            let blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = 'Trading_Report.txt';
+            a.click();
         }
     </script>
 </body>
