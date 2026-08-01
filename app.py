@@ -217,7 +217,7 @@ HTML_TEMPLATE = """
             font-family: Tahoma, sans-serif; 
             /* وضع صورة الخلفية وجعلها تغطي الشاشة بالكامل وثابتة */
             background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), 
-                        url('https://res.cloudinary.com/ke7jwn4a/image/upload/v1785552275/PXL_20260525_165526401_uqs3om.jpg') no-repeat center center fixed; 
+                        url('https://res.cloudinary.com/ke7jwn4a/image/upload/v1785552394/22222222222222222222222_fcin7r.jpg') no-repeat center center fixed; 
             background-size: cover;
             color: #f8fafc; 
             padding: 20px; 
