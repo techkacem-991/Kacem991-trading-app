@@ -209,7 +209,7 @@ HTML_TEMPLATE = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوت إشارات التداول الذكي</title>
+    <title>TRADING WITH KACEM</title>
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#22c55e">
     <style>
@@ -290,7 +290,7 @@ def manifest():
         "categories": ["finance", "business", "productivity"],
         "icons": [
             {
-                "src": "https://cdn-icons-png.flaticon.com/512/2910/2910791.png",
+                "src": "https://ibb.co/nq19wT7P",
                 "sizes": "512x512",
                 "type": "image/png",
                 "purpose": "any maskable"
