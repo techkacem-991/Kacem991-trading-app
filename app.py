@@ -9,10 +9,10 @@ import schedule
 app = Flask('')
 
 SYMBOLS_TO_SCAN = [
-    "ZEC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD", "AVAX-USD", "HBAR-USD",
-    "DOGE-USD", "WBTC-USD", "LINK-USD", "ADA-USD", "NEAR-USD", "LINK-USD", "ETC-USD",
-    "RENDER-USD", "FET-USD", "LTC-USD", "BCH-USD", "BTC-USD", "TRX-USD", "DASH-USD",
-    "ATOM-USD", "ETC-USD", "XLM-USD", "FIL-USD", "ALGO-USD", "ICP-USD","EUL-USD"
+    "BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD", "AVAX-USD", "HBAR-USD", "LINK-USD",
+    "DOGE-USD", "WBTC-USD", "WBETH-USD", "ADA-USD", "NEAR-USD", "LINK-USD", "ETC-USD",
+    "RENDER-USD", "FET-USD", "LTC-USD", "BCH-USD", "ZEC-USD", "TRX-USD", "DASH-USD",
+    "ATOM-USD", "ETC-USD", "XLM-USD", "FIL-USD", "ALGO-USD", "ICP-USD", "XAUT-USD", "EUL-USD"
 ]
 
 def get_all_market_opportunities():
@@ -184,8 +184,8 @@ HTML_TEMPLATE = """
 </head>
 <body>
     <div class="container">
-        <h2>📊 TRADING WITH KACEM</h2>
-        <p>صفقات تداول فورية (سبوت) لأكثر من 25 عملة رقمية من الأشهر والأنشط في السوق🔥</p>
+        <h2>(Beta version) 🤑📊 TRADING WITH KACEM</h2>
+        <p>صفقات تداول فورية (سبوت) لأكثر من 27 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥</p>
         
         <button onclick="fetchAllSignals()">إفحص السوق الآن 🔍</button>
 
@@ -231,8 +231,8 @@ HTML_TEMPLATE = """
                             <h3 style="color: #64DD17; margin-top:0;">📌 العملة: ${res.symbol}</h3>
                             <div class="item">💵 <b>السعر الحالي:</b> $${res.price.toFixed(4)}</div>
                             <div class="item">🎯 <b>نسبة النجاح المتوقعة:</b> ${res.win}%</div>
-                            <div class="item" style="color: #38bdf8;">📈 <b>الهدف الأول (TP1):</b> $${res.tp1.toFixed(4)}</div>
-                            <div class="item" style="color: #38bdf8;">🚀 <b>الهدف الثاني (TP2):</b> $${res.tp2.toFixed(4)}</div>
+                            <div class="item" style="color: #38bdf8;">☝ <b>الهدف الأول (TP1):</b> $${res.tp1.toFixed(4)}</div>
+                            <div class="item" style="color: #38bdf8;">✌ <b>الهدف الثاني (TP2):</b> $${res.tp2.toFixed(4)}</div>
                             <div class="item" style="color: #ef4444;">🛑 <b>وقف الخسارة (SL):</b> $${res.sl.toFixed(4)}</div>
                             <div class="item">📊 <b>مؤشر RSI:</b> ${res.rsi.toFixed(2)}</div>
                             <div class="item">🔍 <b>الشروط المتقدمة:</b> RSI ${res.r_icon} | الاتجاه ${res.t_icon} | السيولة ${res.v_icon}</div>
@@ -258,8 +258,8 @@ HTML_TEMPLATE = """
                             <h3 style="color: #f59e0b; margin-top:0;">🔥 أفضل فرصة تداول حالياً: ${best.symbol}</h3>
                             <div class="item">💵 <b>السعر الحالي:</b> $${best.price.toFixed(4)}</div>
                             <div class="item">🎯 <b>نسبة النجاح المتوقعة:</b> ${best.win}%</div>
-                            <div class="item" style="color: #38bdf8;">📈 <b>الهدف الأول (TP1):</b> $${best.tp1.toFixed(4)}</div>
-                            <div class="item" style="color: #38bdf8;">🚀 <b>الهدف الثاني (TP2):</b> $${best.tp2.toFixed(4)}</div>
+                            <div class="item" style="color: #38bdf8;">☝ <b>الهدف الأول (TP1):</b> $${best.tp1.toFixed(4)}</div>
+                            <div class="item" style="color: #38bdf8;">✌ <b>الهدف الثاني (TP2):</b> $${best.tp2.toFixed(4)}</div>
                             <div class="item" style="color: #ef4444;">🛑 <b>وقف الخسارة (SL):</b> $${best.sl.toFixed(4)}</div>
                         </div>
                     `;
