@@ -255,7 +255,7 @@ HTML_TEMPLATE = """
         <!-- أزرار الفيسبوك وإنستغرام في الأماكن المحددة -->
         <div class="social-bar">
             <a href="https://facebook.com/dahnoun.kacem.2025" target="_blank" class="social-btn btn-facebook" id="fb-btn">
-                <span>📘</span> <span id="fb-text">صفحة الفيسبوك</span>
+                <span>📘</span> <span id="fb-text">فايسبوك</span>
             </a>
             <a href="https://www.instagram.com/d.a__k91" target="_blank" class="social-btn btn-instagram" id="ig-btn">
                 <span>📸</span> <span id="ig-text">إنستغرام</span>
