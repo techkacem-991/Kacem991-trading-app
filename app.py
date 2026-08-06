@@ -220,7 +220,7 @@ HTML_TEMPLATE = """
             </div>
             
             <!-- (احذف هذا السطر لاحقاً عند إتمام التطبيق) -->
-            <span style="color: #ef4444; font-weight: bold; font-size: 14px;">Beta version 🔥</span>
+            <span style="color: #ef4444; font-weight: bold; font-size: 14px;">Beta version ♻</span>
         </div>
 
         <h2 id="app-title">TRADING WITH KACEM 📊 🤑</h2>
