@@ -213,7 +213,7 @@ HTML_TEMPLATE = """
         <div class="top-bar">
             <div class="language-selector-container">
                 <select id="languageSelect" onchange="changeLanguage(this.value)">
-                    <option value="ar">🇲🇦 العربية</option>
+                    <option value="ar">🇵🇸 العربية</option>
                     <option value="fr">🇫🇷 Français</option>
                     <option value="en">🇬🇧 English</option>
                 </select>
