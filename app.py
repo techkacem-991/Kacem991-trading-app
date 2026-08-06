@@ -171,7 +171,7 @@ HTML_TEMPLATE = """
             transition: opacity 0.2s ease;
         }
         .social-btn:hover { opacity: 0.9; }
-        .btn-facebook { background: linear-gradient(45deg, #2fbd89, #20b0a2, #13bbd1, #136fd1, #1326d1); }
+        .btn-facebook { background: linear-gradient(45deg, #20b0a9, #20a4b0, #137bd1, #1548bf, #1625a8); }
         .btn-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
 
         .card { 
