@@ -128,12 +128,12 @@ HTML_TEMPLATE = """
         }
         .container { max-width: 700px; margin: auto; }
         
-        /* شريط علوي يقسم الزاويتين (اللغة يميناً أو يساراً حسب الاتجاه، و Beta في المقابل) */
+        /* الشريط العلوي */
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         .language-selector-container select {
             padding: 6px 12px;
@@ -146,6 +146,33 @@ HTML_TEMPLATE = """
             outline: none;
             width: auto;
         }
+
+        /* شريط أزرار السوشيال ميديا تحت الوصف */
+        .social-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0 20px 0;
+            gap: 15px;
+        }
+        .social-btn {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            text-decoration: none;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            transition: opacity 0.2s ease;
+        }
+        .social-btn:hover { opacity: 0.9; }
+        .btn-facebook { background-color: #1877f2; }
+        .btn-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
 
         .card { 
             background: rgba(30, 41, 59, 0.85); 
@@ -209,7 +236,7 @@ HTML_TEMPLATE = """
 </head>
 <body>
     <div class="container">
-        <!-- الشريط العلوي: قائمة اللغة في جهة، وكلمة Beta version في الجهة المقابلة تماماً -->
+        <!-- الشريط العلوي -->
         <div class="top-bar">
             <div class="language-selector-container">
                 <select id="languageSelect" onchange="changeLanguage(this.value)">
@@ -219,13 +246,22 @@ HTML_TEMPLATE = """
                 </select>
             </div>
             
-            <!-- (احذف هذا السطر لاحقاً عند إتمام التطبيق) -->
-            <span style="color: #ef4444; font-weight: bold; font-size: 14px;">Beta version</span>
+            <span style="color: #ef4444; font-weight: bold; font-size: 14px;">Beta version 🔥</span>
         </div>
 
         <h2 id="app-title">TRADING WITH KACEM 📊 🤑</h2>
         <p id="app-desc">صفقات تداول فورية (سبوت) لأكثر من 27 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥</p>
         
+        <!-- أزرار الفيسبوك وإنستغرام في الأماكن المحددة -->
+        <div class="social-bar">
+            <a href="https://facebook.com/dahnoun.kacem.2025" target="_blank" class="social-btn btn-facebook" id="fb-btn">
+                <span>📘</span> <span id="fb-text">صفحة الفيسبوك</span>
+            </a>
+            <a href="https://www.instagram.com/d.a__k91" target="_blank" class="social-btn btn-instagram" id="ig-btn">
+                <span>📸</span> <span id="ig-text">إنستغرام</span>
+            </a>
+        </div>
+
         <button onclick="fetchAllSignals()" id="btn-scan">إفحص السوق الآن 🔍</button>
 
         <div class="action-buttons">
@@ -244,6 +280,8 @@ HTML_TEMPLATE = """
         const translations = {
             ar: {
                 desc: "صفقات تداول فورية (سبوت) لأكثر من 27 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥",
+                fbText: "صفحة الفيسبوك",
+                igText: "إنستغرام",
                 scan: "إفحص السوق الآن 🔍",
                 export: "تصدير النتائج 💾",
                 sort: "الترتيب حسب نسب النجاح 📈",
@@ -267,6 +305,8 @@ HTML_TEMPLATE = """
             },
             fr: {
                 desc: "Signaux de trading spot instantanés pour plus de 27 cryptomonnaies populaires🔥",
+                fbText: "Page Facebook",
+                igText: "Instagram",
                 scan: "Scanner le marché 🔍",
                 export: "Exporter les résultats 💾",
                 sort: "Trier par taux de réussite 📈",
@@ -290,6 +330,8 @@ HTML_TEMPLATE = """
             },
             en: {
                 desc: "Instant spot trading signals for over 27 popular cryptocurrencies🔥",
+                fbText: "Facebook Page",
+                igText: "Instagram",
                 scan: "Scan Market Now 🔍",
                 export: "Export Results 💾",
                 sort: "Sort by Success Rate 📈",
@@ -325,6 +367,8 @@ HTML_TEMPLATE = """
 
             const t = translations[lang];
             document.getElementById('app-desc').innerText = t.desc;
+            document.getElementById('fb-text').innerText = t.fbText;
+            document.getElementById('ig-text').innerText = t.igText;
             document.getElementById('btn-scan').innerText = t.scan;
             document.getElementById('btn-export').innerText = t.export;
             document.getElementById('btn-sort').innerText = t.sort;
