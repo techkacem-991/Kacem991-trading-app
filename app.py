@@ -126,14 +126,13 @@ HTML_TEMPLATE = """
             text-align: center; 
             margin: 0; 
         }
-        .container { max-width: 700px; margin: auto; position: relative; }
+        .container { max-width: 700px; margin: auto; }
         
-        /* تصميم خانة اختيار اللغة في الزاوية */
-        .language-selector-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1000;
+        /* تصميم وترتيب خانة اختيار اللغة في أعلى الصفحة بشكل منظم */
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
         }
         .language-selector-container select {
             padding: 6px 12px;
@@ -145,7 +144,6 @@ HTML_TEMPLATE = """
             font-size: 14px;
             outline: none;
             width: auto;
-            margin: 0;
         }
 
         .card { 
@@ -192,7 +190,7 @@ HTML_TEMPLATE = """
         
         .loading { color: #38bdf8; margin-top: 15px; font-weight: bold; font-size: 18px; }
         .item { margin: 8px 0; font-size: 14px; }
-        h2 { color: #38bdf8; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin-top: 40px; }
+        h2 { color: #38bdf8; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin-top: 10px; }
         
         input, select {
             width: 100%;
@@ -210,16 +208,18 @@ HTML_TEMPLATE = """
 </head>
 <body>
     <div class="container">
-        <!-- خانة اختيار اللغة في الزاوية العليا -->
-        <div class="language-selector-container">
-            <select id="languageSelect" onchange="changeLanguage(this.value)">
-                <option value="ar">🇲🇦 العربية</option>
-                <option value="fr">🇫🇷 Français</option>
-                <option value="en">🇬🇧 English</option>
-            </select>
+        <!-- شريط علوي يحتوي على اختيار اللغة بشكل منظم -->
+        <div class="top-bar">
+            <div class="language-selector-container">
+                <select id="languageSelect" onchange="changeLanguage(this.value)">
+                    <option value="ar">🇲🇦 العربية</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="en">🇬🇧 English</option>
+                </select>
+            </div>
         </div>
 
-        <h2>(Beta version) 🤑📊 TRADING WITH KACEM</h2>
+        <h2 id="app-title">(Beta version) 🤑📊 TRADING WITH KACEM</h2>
         <p id="app-desc">صفقات تداول فورية (سبوت) لأكثر من 27 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥</p>
         
         <button onclick="fetchAllSignals()" id="btn-scan">إفحص السوق الآن 🔍</button>
@@ -237,6 +237,79 @@ HTML_TEMPLATE = """
     <script>
         let lastMarketData = [];
 
+        // قاموس الترجمات لتحديث جميع النصوص والأسرار تلقائياً
+        const translations = {
+            ar: {
+                desc: "صفقات تداول فورية (سبوت) لأكثر من 27 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥",
+                scan: "إفحص السوق الآن 🔍",
+                export: "تصدير النتائج 💾",
+                sort: "الترتيب حسب نسب النجاح 📈",
+                top: "أفضل صفقة 🔥",
+                conv: "تحويل العملات 💱",
+                loadingScan: "⏳ جاري فحص جميع العملات وإعداد التقارير... يرجى الانتظار",
+                loadingTop: "⏳ جاري تحديد أفضل فرصة تداول...",
+                loadingSort: "⏳ جاري ترتيب الصفقات حسب نسبة النجاح...",
+                noData: "❌ لم يتم العثور على بيانات، أعد المحاولة.",
+                errorConn: "❌ حدث خطأ في الاتصال بالسيرفر.",
+                errorTop: "❌ حدث خطأ أثناء جلب أفضل صفقة.",
+                errorSort: "❌ حدث خطأ أثناء الترتيب.",
+                noExport: "قم بفحص السوق أولاً لتتمكن من تصدير النتائج!",
+                curLabel: "تحويل العملات العالمية بسعر البنك",
+                amount: "المبلغ:",
+                fromCurr: "من عملة:",
+                toCurr: "إلى عملة:",
+                btnConvAction: "تحويل العملة",
+                resTitle: "النتيجة:",
+                rateLabel: "سعر الصرف:"
+            },
+            fr: {
+                desc: "Signaux de trading spot instantanés pour plus de 27 cryptomonnaies populaires🔥",
+                scan: "Scanner le marché 🔍",
+                export: "Exporter les résultats 💾",
+                sort: "Trier par taux de réussite 📈",
+                top: "Meilleur trade 🔥",
+                conv: "Convertisseur 💱",
+                loadingScan: "⏳ Analyse de toutes les cryptos en cours... Veuillez patienter",
+                loadingTop: "⏳ Recherche de la meilleure opportunité...",
+                loadingSort: "⏳ Tri des signaux par taux de réussite...",
+                noData: "❌ Aucune donnée trouvée, réessayez.",
+                errorConn: "❌ Erreur de connexion au serveur.",
+                errorTop: "❌ Erreur lors de la récupération du meilleur trade.",
+                errorSort: "❌ Erreur lors du tri.",
+                noExport: "Veuillez d'abord scanner le marché pour exporter !",
+                curLabel: "Convertisseur de devises au taux bancaire",
+                amount: "Montant:",
+                fromCurr: "De la devise:",
+                toCurr: "Vers la devise:",
+                btnConvAction: "Convertir",
+                resTitle: "Résultat:",
+                rateLabel: "Taux de change:"
+            },
+            en: {
+                desc: "Instant spot trading signals for over 27 popular cryptocurrencies🔥",
+                scan: "Scan Market Now 🔍",
+                export: "Export Results 💾",
+                sort: "Sort by Success Rate 📈",
+                top: "Top Signal 🔥",
+                conv: "Currency Converter 💱",
+                loadingScan: "⏳ Scanning all coins and preparing reports... Please wait",
+                loadingTop: "⏳ Identifying the best trading opportunity...",
+                loadingSort: "⏳ Sorting signals by success rate...",
+                noData: "❌ No data found, please try again.",
+                errorConn: "❌ Server connection error.",
+                errorTop: "❌ Error fetching top signal.",
+                errorSort: "❌ Error while sorting.",
+                noExport: "Please scan the market first to export results!",
+                curLabel: "Global Currency Converter at Bank Rate",
+                amount: "Amount:",
+                fromCurr: "From Currency:",
+                toCurr: "To Currency:",
+                btnConvAction: "Convert Currency",
+                resTitle: "Result:",
+                rateLabel: "Exchange Rate:"
+            }
+        };
+
         function changeLanguage(lang) {
             const htmlTag = document.documentElement;
             if (lang === 'ar') {
@@ -246,6 +319,15 @@ HTML_TEMPLATE = """
                 htmlTag.setAttribute('dir', 'ltr');
                 htmlTag.setAttribute('lang', lang);
             }
+
+            // تحديث النصوص ديناميكياً
+            const t = translations[lang];
+            document.getElementById('app-desc').innerText = t.desc;
+            document.getElementById('btn-scan').innerText = t.scan;
+            document.getElementById('btn-export').innerText = t.export;
+            document.getElementById('btn-sort').innerText = t.sort;
+            document.getElementById('btn-top').innerText = t.top;
+            document.getElementById('btn-conv').innerText = t.conv;
         }
 
         if ('serviceWorker' in navigator) {
@@ -254,91 +336,122 @@ HTML_TEMPLATE = """
             .catch((err) => console.log('Service Worker Failed', err));
         }
 
+        function getCurrentLang() {
+            return document.documentElement.getAttribute('lang') || 'ar';
+        }
+
         function fetchAllSignals() {
+            const lang = getCurrentLang();
+            const t = translations[lang];
             const container = document.getElementById('results-container');
-            container.innerHTML = '<div class="loading">⏳ جاري فحص جميع العملات وإعداد التقارير... يرجى الانتظار</div>';
+            container.innerHTML = `<div class="loading">${t.loadingScan}</div>`;
             
             fetch('/api/all')
             .then(response => response.json())
             .then(data => {
                 lastMarketData = data;
-                renderCards(data, container);
+                renderCards(data, container, lang);
             }).catch(err => {
-                container.innerHTML = '<p style="color: #ef4444; margin-top:20px;">❌ حدث خطأ في الاتصال بالسيرفر.</p>';
+                container.innerHTML = `<p style="color: #ef4444; margin-top:20px;">${t.errorConn}</p>`;
             });
         }
 
-        function renderCards(data, container) {
+        function renderCards(data, container, lang) {
+            const t = translations[lang];
             if(data && data.length > 0) {
                 let html = '';
                 data.forEach(res => {
+                    const symbolText = lang === 'ar' ? '📌 العملة:' : (lang === 'fr' ? '📌 Symbole:' : '📌 Symbol:');
+                    const priceText = lang === 'ar' ? '💵 السعر الحالي:' : (lang === 'fr' ? '💵 Prix actuel:' : '💵 Current Price:');
+                    const winText = lang === 'ar' ? '🎯 نسبة النجاح المتوقعة:' : (lang === 'fr' ? '🎯 Taux de réussite:' : '🎯 Expected Win Rate:');
+                    const tp1Text = lang === 'ar' ? '☝ الهدف الأول (TP1):' : (lang === 'fr' ? '☝ 1er Objectif (TP1):' : '☝ 1st Target (TP1):');
+                    const tp2Text = lang === 'ar' ? '✌ الهدف الثاني (TP2):' : (lang === 'fr' ? '✌ 2ème Objectif (TP2):' : '✌ 2nd Target (TP2):');
+                    const slText = lang === 'ar' ? '🛑 وقف الخسارة (SL):' : (lang === 'fr' ? '🛑 Stop Loss (SL):' : '🛑 Stop Loss (SL):');
+                    const rsiText = lang === 'ar' ? '📊 مؤشر RSI:' : (lang === 'fr' ? '📊 Indicateur RSI:' : '📊 RSI Indicator:');
+                    const condText = lang === 'ar' ? '🔍 الشروط المتقدمة: RSI' : (lang === 'fr' ? '🔍 Conditions: RSI' : '🔍 Advanced Conditions: RSI');
+                    const trendText = lang === 'ar' ? 'الاتجاه' : (lang === 'fr' ? 'Tendance' : 'Trend');
+                    const liqText = lang === 'ar' ? 'السيولة' : (lang === 'fr' ? 'Liquidité' : 'Liquidity');
+
                     html += `
                         <div class="card">
-                            <h3 style="color: #64DD17; margin-top:0;">📌 العملة: ${res.symbol}</h3>
-                            <div class="item">💵 <b>السعر الحالي:</b> $${res.price.toFixed(4)}</div>
-                            <div class="item">🎯 <b>نسبة النجاح المتوقعة:</b> ${res.win}%</div>
-                            <div class="item" style="color: #38bdf8;">☝ <b>الهدف الأول (TP1):</b> $${res.tp1.toFixed(4)}</div>
-                            <div class="item" style="color: #38bdf8;">✌ <b>الهدف الثاني (TP2):</b> $${res.tp2.toFixed(4)}</div>
-                            <div class="item" style="color: #ef4444;">🛑 <b>وقف الخسارة (SL):</b> $${res.sl.toFixed(4)}</div>
-                            <div class="item">📊 <b>مؤشر RSI:</b> ${res.rsi.toFixed(2)}</div>
-                            <div class="item">🔍 <b>الشروط المتقدمة:</b> RSI ${res.r_icon} | الاتجاه ${res.t_icon} | السيولة ${res.v_icon}</div>
+                            <h3 style="color: #64DD17; margin-top:0;">${symbolText} ${res.symbol}</h3>
+                            <div class="item"><b>${priceText}</b> $${res.price.toFixed(4)}</div>
+                            <div class="item"><b>${winText}</b> ${res.win}%</div>
+                            <div class="item" style="color: #38bdf8;"><b>${tp1Text}</b> $${res.tp1.toFixed(4)}</div>
+                            <div class="item" style="color: #38bdf8;"><b>${tp2Text}</b> $${res.tp2.toFixed(4)}</div>
+                            <div class="item" style="color: #ef4444;"><b>${slText}</b> $${res.sl.toFixed(4)}</div>
+                            <div class="item"><b>${rsiText}</b> ${res.rsi.toFixed(2)}</div>
+                            <div class="item"><b>${condText}</b> ${res.r_icon} | ${trendText} ${res.t_icon} | ${liqText} ${res.v_icon}</div>
                         </div>
                     `;
                 });
                 container.innerHTML = html;
             } else {
-                container.innerHTML = '<p style="color: #ef4444; margin-top:20px;">❌ لم يتم العثور على بيانات، أعد المحاولة.</p>';
+                container.innerHTML = `<p style="color: #ef4444; margin-top:20px;">${t.noData}</p>`;
             }
         }
 
         function fetchTopSignal() {
+            const lang = getCurrentLang();
+            const t = translations[lang];
             const container = document.getElementById('results-container');
-            container.innerHTML = '<div class="loading">⏳ جاري تحديد أفضل فرصة تداول...</div>';
+            container.innerHTML = `<div class="loading">${t.loadingTop}</div>`;
             
             fetch('/api/top')
             .then(res => res.json())
             .then(best => {
                 if(best && best.symbol) {
+                    const topTitle = lang === 'ar' ? `🔥 أفضل فرصة تداول حالياً: ${best.symbol}` : (lang === 'fr' ? `🔥 Meilleure opportunité actuelle : ${best.symbol}` : `🔥 Best current trading opportunity: ${best.symbol}`);
+                    const priceText = lang === 'ar' ? '💵 السعر الحالي:' : (lang === 'fr' ? '💵 Prix actuel:' : '💵 Current Price:');
+                    const winText = lang === 'ar' ? '🎯 نسبة النجاح المتوقعة:' : (lang === 'fr' ? '🎯 Taux de réussite:' : '🎯 Expected Win Rate:');
+                    const tp1Text = lang === 'ar' ? '☝ الهدف الأول (TP1):' : (lang === 'fr' ? '☝ 1er Objectif (TP1):' : '☝ 1st Target (TP1):');
+                    const tp2Text = lang === 'ar' ? '✌ الهدف الثاني (TP2):' : (lang === 'fr' ? '✌ 2ème Objectif (TP2):' : '✌ 2nd Target (TP2):');
+                    const slText = lang === 'ar' ? '🛑 وقف الخسارة (SL):' : (lang === 'fr' ? '🛑 Stop Loss (SL):' : '🛑 Stop Loss (SL):');
+
                     container.innerHTML = `
                         <div class="card" style="border-right-color: #f59e0b;">
-                            <h3 style="color: #f59e0b; margin-top:0;">🔥 أفضل فرصة تداول حالياً: ${best.symbol}</h3>
-                            <div class="item">💵 <b>السعر الحالي:</b> $${best.price.toFixed(4)}</div>
-                            <div class="item">🎯 <b>نسبة النجاح المتوقعة:</b> ${best.win}%</div>
-                            <div class="item" style="color: #38bdf8;">☝ <b>الهدف الأول (TP1):</b> $${best.tp1.toFixed(4)}</div>
-                            <div class="item" style="color: #38bdf8;">✌ <b>الهدف الثاني (TP2):</b> $${best.tp2.toFixed(4)}</div>
-                            <div class="item" style="color: #ef4444;">🛑 <b>وقف الخسارة (SL):</b> $${best.sl.toFixed(4)}</div>
+                            <h3 style="color: #f59e0b; margin-top:0;">${topTitle}</h3>
+                            <div class="item"><b>${priceText}</b> $${best.price.toFixed(4)}</div>
+                            <div class="item"><b>${winText}</b> ${best.win}%</div>
+                            <div class="item" style="color: #38bdf8;"><b>${tp1Text}</b> $${best.tp1.toFixed(4)}</div>
+                            <div class="item" style="color: #38bdf8;"><b>${tp2Text}</b> $${best.tp2.toFixed(4)}</div>
+                            <div class="item" style="color: #ef4444;"><b>${slText}</b> $${best.sl.toFixed(4)}</div>
                         </div>
                     `;
                 } else {
-                    container.innerHTML = '<p style="color: #ef4444; margin-top:20px;">❌ لا توجد بيانات متاحة حالياً.</p>';
+                    container.innerHTML = `<p style="color: #ef4444; margin-top:20px;">${t.noData}</p>`;
                 }
             }).catch(err => {
-                container.innerHTML = '<p style="color: #ef4444; margin-top:20px;">❌ حدث خطأ أثناء جلب أفضل صفقة.</p>';
+                container.innerHTML = `<p style="color: #ef4444; margin-top:20px;">${t.errorTop}</p>`;
             });
         }
 
         function sortSignals() {
+            const lang = getCurrentLang();
+            const t = translations[lang];
             const container = document.getElementById('results-container');
-            container.innerHTML = '<div class="loading">⏳ جاري ترتيب الصفقات حسب نسبة النجاح...</div>';
+            container.innerHTML = `<div class="loading">${t.loadingSort}</div>`;
             
             fetch('/api/sort')
             .then(res => res.json())
             .then(data => {
                 lastMarketData = data;
-                renderCards(data, container);
+                renderCards(data, container, lang);
             }).catch(err => {
-                container.innerHTML = '<p style="color: #ef4444; margin-top:20px;">❌ حدث خطأ أثناء الترتيب.</p>';
+                container.innerHTML = `<p style="color: #ef4444; margin-top:20px;">${t.errorSort}</p>`;
             });
         }
 
         function exportData() {
+            const lang = getCurrentLang();
+            const t = translations[lang];
             if (lastMarketData.length === 0) {
-                alert('قم بفحص السوق أولاً لتتمكن من تصدير النتائج!');
+                alert(t.noExport);
                 return;
             }
-            let textContent = "--- تقرير إشارات التداول الذكي ---\\n\\n";
+            let textContent = "--- Trading Signals Report ---\\n\\n";
             lastMarketData.forEach(res => {
-                textContent += `العملة: ${res.symbol}\\nالسعر: ${res.price}\\nنسبة النجاح: ${res.win}%\\nالهدف الأول: ${res.tp1}\\nالهدف الثاني: ${res.tp2}\\nوقف الخسارة: ${res.sl}\\n-------------------\\n`;
+                textContent += `Symbol: ${res.symbol}\\nPrice: ${res.price}\\nWin Rate: ${res.win}%\\nTP1: ${res.tp1}\\nTP2: ${res.tp2}\\nSL: ${res.sl}\\n-------------------\\n`;
             });
             let blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
             let url = URL.createObjectURL(blob);
@@ -349,74 +462,78 @@ HTML_TEMPLATE = """
         }
 
         function showCurrencyConverter() {
+            const lang = getCurrentLang();
+            const t = translations[lang];
             const container = document.getElementById('results-container');
             container.innerHTML = `
                 <div class="card" style="border-right-color: #10b981;">
-                    <h3 style="color: #10b981; margin-top:0;">💱 تحويل العملات العالمية بسعر البنك</h3>
-                    <label>المبلغ:</label>
+                    <h3 style="color: #10b981; margin-top:0;">💱 ${t.curLabel}</h3>
+                    <label>${t.amount}</label>
                     <input type="number" id="conv-amount" value="100">
                     
-                    <label>من عملة:</label>
+                    <label>${t.fromCurr}</label>
                     <select id="conv-from">
-                        <option value="USD" selected>USD - الدولار الأمريكي</option>
-                        <option value="EUR">EUR - اليورو</option>
-                        <option value="GBP">GBP - الجنيه الإسترليني</option>
-                        <option value="SAR">SAR - الريال السعودي</option>
-                        <option value="AED">AED - الدرهم الإماراتي</option>
-                        <option value="EGP">EGP - الجنيه المصري</option>
-                        <option value="DZD">DZD - الدينار الجزائري</option>
-                        <option value="MAD">MAD - الدرهم المغربي</option>
-                        <option value="JOD">JOD - الدينار الأردني</option>
-                        <option value="KWD">KWD - الدينار الكويتي</option>
+                        <option value="USD" selected>USD - US Dollar</option>
+                        <option value="EUR">EUR - Euro</option>
+                        <option value="GBP">GBP - British Pound</option>
+                        <option value="SAR">SAR - Saudi Riyal</option>
+                        <option value="AED">AED - UAE Dirham</option>
+                        <option value="EGP">EGP - Egyptian Pound</option>
+                        <option value="DZD">DZD - Algerian Dinar</option>
+                        <option value="MAD">MAD - Moroccan Dirham</option>
+                        <option value="JOD">JOD - Jordanian Dinar</option>
+                        <option value="KWD">KWD - Kuwaiti Dinar</option>
                     </select>
                     
-                    <label>إلى عملة:</label>
+                    <label>${t.toCurr}</label>
                     <select id="conv-to">
-                        <option value="USD">USD - الدولار الأمريكي</option>
-                        <option value="EUR" selected>EUR - اليورو</option>
-                        <option value="GBP">GBP - الجنيه الإسترليني</option>
-                        <option value="SAR">SAR - الريال السعودي</option>
-                        <option value="AED">AED - الدرهم الإماراتي</option>
-                        <option value="EGP">EGP - الجنيه المصري</option>
-                        <option value="DZD">DZD - الدينار الجزائري</option>
-                        <option value="MAD">MAD - الدرهم المغربي</option>
-                        <option value="JOD">JOD - الدينار الأردني</option>
-                        <option value="KWD">KWD - الدينار الكويتي</option>
+                        <option value="USD">USD - US Dollar</option>
+                        <option value="EUR" selected>EUR - Euro</option>
+                        <option value="GBP">GBP - British Pound</option>
+                        <option value="SAR">SAR - Saudi Riyal</option>
+                        <option value="AED">AED - UAE Dirham</option>
+                        <option value="EGP">EGP - Egyptian Pound</option>
+                        <option value="DZD">DZD - Algerian Dinar</option>
+                        <option value="MAD">MAD - Moroccan Dirham</option>
+                        <option value="JOD">JOD - Jordanian Dinar</option>
+                        <option value="KWD">KWD - Kuwaiti Dinar</option>
                     </select>
                     
-                    <button onclick="convertCurrency()" style="background:#10b981; margin-top:5px;">تحويل العملة</button>
+                    <button onclick="convertCurrency()" style="background:#10b981; margin-top:5px;">${t.btnConvAction}</button>
                     <div id="conv-result" style="margin-top: 15px;"></div>
                 </div>
             `;
         }
 
         function convertCurrency() {
+            const lang = getCurrentLang();
             const amount = parseFloat(document.getElementById('conv-amount').value);
             const from = document.getElementById('conv-from').value;
             const to = document.getElementById('conv-to').value;
             const resDiv = document.getElementById('conv-result');
 
             if (!amount) {
-                resDiv.innerHTML = '<p style="color: #ef4444;">❌ أدخل مبلغاً صحيحاً.</p>';
+                resDiv.innerHTML = '<p style="color: #ef4444;">❌ Invalid amount.</p>';
                 return;
             }
 
-            resDiv.innerHTML = '<div style="color: #38bdf8;">⏳ جاري جلب أسعار الصرف...</div>';
+            resDiv.innerHTML = '<div style="color: #38bdf8;">⏳ Fetching exchange rates...</div>';
 
             fetch(`/api/convert?from=${from}&to=${to}&amount=${amount}`)
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
+                    const t = translations[getCurrentLang()];
                     resDiv.innerHTML = `
                         <hr style="border-color: #334155;">
-                        <div class="item" style="font-size: 16px; color: #64DD17;"><b>النتيجة:</b> ${data.result.toFixed(4)} ${to}</div>
-                        <div class="item" style="font-size: 12px; color: #94a3b8;">سعر الصرف: 1 ${from} = ${data.rate.toFixed(4)} ${to}</div>
+                        <div class="item" style="font-size: 16px; color: #64DD17;"><b>${t.resTitle}</b> ${data.result.toFixed(4)} ${to}</div>
+                        <div class="item" style="font-size: 12px; color: #94a3b8;">${t.rateLabel} 1 ${from} = ${data.rate.toFixed(4)} ${to}</div>
                     `;
                 } else {
-                    resDiv.innerHTML = '<p style="color: #ef4444;">❌ فشل جلب أسعار الصرف.</p>';
+                    resDiv.innerHTML = '<p style="color: #ef4444;">❌ Failed to fetch rates.</p>';
                 }
             }).catch(err => {
-                resDiv.innerHTML = '<p style="color: #ef4444;">❌ حدث خطأ في الاتصال.</p>';
+                resDiv.innerHTML = '<p style="color: #ef4444;">❌ Connection error.</p>';
             });
         }
     </script>
