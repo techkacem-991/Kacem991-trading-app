@@ -9,10 +9,10 @@ import schedule
 app = Flask('')
 
 SYMBOLS_TO_SCAN = [
-    "BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD", "AVAX-USD", "HBAR-USD", "LINK-USD",
-    "DOGE-USD", "WBTC-USD", "WBETH-USD", "ADA-USD", "NEAR-USD", "LINK-USD", "ETC-USD",
-    "RENDER-USD", "FET-USD", "LTC-USD", "BCH-USD", "ZEC-USD", "TRX-USD", "DASH-USD",
-    "ATOM-USD", "ETC-USD", "XLM-USD", "FIL-USD", "ALGO-USD", "ICP-USD", "XAUT-USD", "EUL-USD"
+    "BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD", "AVAX-USD", "HBAR-USD", "LINK-USD", "INJ-USD",
+    "DOGE-USD", "WBTC-USD", "WBETH-USD", "ADA-USD", "NEAR-USD", "LINK-USD", "ETC-USD", "SUI-USD",
+    "RENDER-USD", "FET-USD", "LTC-USD", "BCH-USD", "ZEC-USD", "TRX-USD", "DASH-USD", "APT-USD",
+    "ATOM-USD", "ETC-USD", "XLM-USD", "FIL-USD", "ALGO-USD", "ICP-USD", "XAUT-USD", "EUL-USD", "ONDO-USD"
 ]
 
 def get_all_market_opportunities():
@@ -250,7 +250,7 @@ HTML_TEMPLATE = """
         </div>
 
         <h2 id="app-title">TRADING WITH KACEM 📊 🤑</h2>
-        <p id="app-desc">صفقات تداول فورية (سبوت) لأكثر من 27 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥</p>
+        <p id="app-desc">صفقات تداول فورية (سبوت) لأكثر من 30 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥</p>
         
         <!-- أزرار الفيسبوك وإنستغرام في الأماكن المحددة -->
         <div class="social-bar">
