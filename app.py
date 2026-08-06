@@ -126,7 +126,28 @@ HTML_TEMPLATE = """
             text-align: center; 
             margin: 0; 
         }
-        .container { max-width: 700px; margin: auto; }
+        .container { max-width: 700px; margin: auto; position: relative; }
+        
+        /* تصميم خانة اختيار اللغة في الزاوية */
+        .language-selector-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .language-selector-container select {
+            padding: 6px 12px;
+            border-radius: 8px;
+            background-color: #1e293b;
+            color: #fff;
+            border: 1px solid #475569;
+            cursor: pointer;
+            font-size: 14px;
+            outline: none;
+            width: auto;
+            margin: 0;
+        }
+
         .card { 
             background: rgba(30, 41, 59, 0.85); 
             backdrop-filter: blur(5px); 
@@ -136,6 +157,11 @@ HTML_TEMPLATE = """
             margin-top: 15px; 
             text-align: right; 
             border-right: 5px solid #22c55e; 
+        }
+        html[dir="ltr"] .card {
+            text-align: left;
+            border-right: none;
+            border-left: 5px solid #22c55e;
         }
         .action-buttons {
             display: flex;
@@ -166,7 +192,7 @@ HTML_TEMPLATE = """
         
         .loading { color: #38bdf8; margin-top: 15px; font-weight: bold; font-size: 18px; }
         .item { margin: 8px 0; font-size: 14px; }
-        h2 { color: #38bdf8; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        h2 { color: #38bdf8; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin-top: 40px; }
         
         input, select {
             width: 100%;
@@ -184,16 +210,25 @@ HTML_TEMPLATE = """
 </head>
 <body>
     <div class="container">
+        <!-- خانة اختيار اللغة في الزاوية العليا -->
+        <div class="language-selector-container">
+            <select id="languageSelect" onchange="changeLanguage(this.value)">
+                <option value="ar">🇲🇦 العربية</option>
+                <option value="fr">🇫🇷 Français</option>
+                <option value="en">🇬🇧 English</option>
+            </select>
+        </div>
+
         <h2>(Beta version) 🤑📊 TRADING WITH KACEM</h2>
-        <p>صفقات تداول فورية (سبوت) لأكثر من 27 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥</p>
+        <p id="app-desc">صفقات تداول فورية (سبوت) لأكثر من 27 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥</p>
         
-        <button onclick="fetchAllSignals()">إفحص السوق الآن 🔍</button>
+        <button onclick="fetchAllSignals()" id="btn-scan">إفحص السوق الآن 🔍</button>
 
         <div class="action-buttons">
-            <button class="btn-custom btn-export" onclick="exportData()">تصدير النتائج 💾</button>
-            <button class="btn-custom btn-sort" onclick="sortSignals()">الترتيب حسب نسب النجاح 📈</button>
-            <button class="btn-custom btn-top" onclick="fetchTopSignal()">أفضل صفقة 🔥</button>
-            <button class="btn-custom btn-conv" onclick="showCurrencyConverter()">تحويل العملات 💱</button>
+            <button class="btn-custom btn-export" onclick="exportData()" id="btn-export">تصدير النتائج 💾</button>
+            <button class="btn-custom btn-sort" onclick="sortSignals()" id="btn-sort">الترتيب حسب نسب النجاح 📈</button>
+            <button class="btn-custom btn-top" onclick="fetchTopSignal()" id="btn-top">أفضل صفقة 🔥</button>
+            <button class="btn-custom btn-conv" onclick="showCurrencyConverter()" id="btn-conv">تحويل العملات 💱</button>
         </div>
 
         <div id="results-container"></div>
@@ -201,6 +236,17 @@ HTML_TEMPLATE = """
 
     <script>
         let lastMarketData = [];
+
+        function changeLanguage(lang) {
+            const htmlTag = document.documentElement;
+            if (lang === 'ar') {
+                htmlTag.setAttribute('dir', 'rtl');
+                htmlTag.setAttribute('lang', 'ar');
+            } else {
+                htmlTag.setAttribute('dir', 'ltr');
+                htmlTag.setAttribute('lang', lang);
+            }
+        }
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
@@ -468,8 +514,6 @@ def api_convert():
         amount = 1.0
 
     try:
-        # استخدام Yahoo Finance لجلب زوج العملات العالمي مباشرة (مثال: EURUSD=X أو EURDZD=X)
-        # ملاحظة: يتم عكس الرمز أو ضبطه بناءً على أزواج الفوركس المتاحة
         pair = f"{from_curr}{to_curr}=X"
         ticker = yf.Ticker(pair)
         hist = ticker.history(period="1d", interval="1m")
@@ -477,7 +521,6 @@ def api_convert():
         if not hist.empty:
             rate = float(hist['Close'].iloc[-1])
         else:
-            # محاولة العكس إذا لم يتوفر الزوج مباشرة
             pair_inv = f"{to_curr}{from_curr}=X"
             ticker_inv = yf.Ticker(pair_inv)
             hist_inv = ticker_inv.history(period="1d", interval="1m")
