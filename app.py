@@ -220,7 +220,7 @@ HTML_TEMPLATE = """
         </div>
 
         <h2 id="app-title">🤑📊 TRADING WITH KACEM</h2>
-        <p id="app-desc">صفقات تداول فورية (سبوت) لأكثر من 27 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥               (Beta version)</p>
+        <p id="app-desc">صفقات تداول فورية (سبوت) لأكثر من 27 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥</p>
         
         <button onclick="fetchAllSignals()" id="btn-scan">إفحص السوق الآن 🔍</button>
 
