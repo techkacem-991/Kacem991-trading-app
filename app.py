@@ -246,7 +246,7 @@ HTML_TEMPLATE = """
                 </select>
             </div>
             
-            <span style="color: #ef4444; font-weight: bold; font-size: 14px;">Beta version 🔥</span>
+            <span style="color: #ef4444; font-weight: bold; font-size: 14px;">Beta version</span>
         </div>
 
         <h2 id="app-title">TRADING WITH KACEM 📊 🤑</h2>
@@ -279,7 +279,7 @@ HTML_TEMPLATE = """
 
         const translations = {
             ar: {
-                desc: "صفقات تداول فورية (سبوت) لأكثر من 27 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥",
+                desc: "صفقات تداول فورية (سبوت) لأكثر من 30 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥",
                 fbText: "صفحة الفيسبوك",
                 igText: "إنستغرام",
                 scan: "إفحص السوق الآن 🔍",
