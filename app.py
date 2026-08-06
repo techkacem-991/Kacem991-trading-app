@@ -128,11 +128,12 @@ HTML_TEMPLATE = """
         }
         .container { max-width: 700px; margin: auto; }
         
-        /* تصميم وترتيب خانة اختيار اللغة في أعلى الصفحة بشكل منظم */
+        /* شريط علوي يقسم الزاويتين (اللغة يميناً أو يساراً حسب الاتجاه، و Beta في المقابل) */
         .top-bar {
             display: flex;
-            justify-content: flex-end;
-            margin-bottom: 10px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
         .language-selector-container select {
             padding: 6px 12px;
@@ -208,18 +209,21 @@ HTML_TEMPLATE = """
 </head>
 <body>
     <div class="container">
-        <!-- شريط علوي يحتوي على اختيار اللغة بشكل منظم -->
+        <!-- الشريط العلوي: قائمة اللغة في جهة، وكلمة Beta version في الجهة المقابلة تماماً -->
         <div class="top-bar">
             <div class="language-selector-container">
                 <select id="languageSelect" onchange="changeLanguage(this.value)">
-                    <option value="ar">🇵🇸 العربية</option>
+                    <option value="ar">🇲🇦 العربية</option>
                     <option value="fr">🇫🇷 Français</option>
                     <option value="en">🇬🇧 English</option>
                 </select>
             </div>
+            
+            <!-- (احذف هذا السطر لاحقاً عند إتمام التطبيق) -->
+            <span style="color: #ef4444; font-weight: bold; font-size: 14px;">Beta version 🔥</span>
         </div>
 
-        <h2 id="app-title">🤑📊 TRADING WITH KACEM</h2>
+        <h2 id="app-title">TRADING WITH KACEM 📊 🤑</h2>
         <p id="app-desc">صفقات تداول فورية (سبوت) لأكثر من 27 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥</p>
         
         <button onclick="fetchAllSignals()" id="btn-scan">إفحص السوق الآن 🔍</button>
@@ -237,7 +241,6 @@ HTML_TEMPLATE = """
     <script>
         let lastMarketData = [];
 
-        // قاموس الترجمات لتحديث جميع النصوص والأسرار تلقائياً
         const translations = {
             ar: {
                 desc: "صفقات تداول فورية (سبوت) لأكثر من 27 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥",
@@ -320,7 +323,6 @@ HTML_TEMPLATE = """
                 htmlTag.setAttribute('lang', lang);
             }
 
-            // تحديث النصوص ديناميكياً
             const t = translations[lang];
             document.getElementById('app-desc').innerText = t.desc;
             document.getElementById('btn-scan').innerText = t.scan;
