@@ -130,9 +130,11 @@ HTML_TEMPLATE = """
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
+            position: relative;
+            z-index: 999; /* ضمان ظهور القائمة واستجابتها للضغط فوق أي عنصر */
         }
         .language-selector-container select {
-            padding: 6px 12px;
+            padding: 8px 14px;
             border-radius: 8px;
             background-color: #1e293b;
             color: #fff;
@@ -141,6 +143,7 @@ HTML_TEMPLATE = """
             font-size: 14px;
             outline: none;
             width: auto;
+            appearance: menulist; /* ضمان ظهور السهم الافتراضي للمتصفح */
         }
 
         .social-bar {
@@ -240,7 +243,7 @@ HTML_TEMPLATE = """
                     <option value="en">🇬🇧 English</option>
                 </select>
             </div>
-            <span style="color: #ef4444; font-weight: bold; font-size: 14px;">Beta version</span>
+            <span style="color: #ef4444; font-weight: bold; font-size: 14px;" id="beta-text">Beta version</span>
         </div>
 
         <h2 id="app-title">TRADING WITH KACEM 📊 🤑</h2>
@@ -253,7 +256,6 @@ HTML_TEMPLATE = """
             <a href="https://www.instagram.com/d.a__k91" target="_blank" class="social-btn btn-instagram" id="ig-btn">
                 <span>📸</span> <span id="ig-text">إنستغرام</span>
             </a>
-            <!-- تم تعديل رابط البوت هنا ليوجه نحو بوت تيليجرام الخاص بك مباشرة -->
             <a href="https://t.me/Kacem991_bot" target="_blank" class="social-btn btn-bot" id="bot-btn">
                 <span>🤖</span> <span id="bot-text">بوت التليجرام</span>
             </a>
@@ -302,7 +304,7 @@ HTML_TEMPLATE = """
                 rateLabel: "سعر الصرف:"
             },
             fr: {
-                desc: "Signaux de trading spot instantanés pour plus de 27 cryptomonnaies populaires🔥",
+                desc: "Signaux de trading spot instantanés pour plus de 30 cryptomonnaies populaires🔥",
                 fbText: "Facebook",
                 igText: "Instagram",
                 botText: "Bot Telegram",
@@ -328,7 +330,7 @@ HTML_TEMPLATE = """
                 rateLabel: "Taux de change:"
             },
             en: {
-                desc: "Instant spot trading signals for over 27 popular cryptocurrencies🔥",
+                desc: "Instant spot trading signals for over 30 popular cryptocurrencies🔥",
                 fbText: "Facebook",
                 igText: "Instagram",
                 botText: "Telegram Bot",
@@ -378,7 +380,7 @@ HTML_TEMPLATE = """
             document.getElementById('btn-top').innerText = t.top;
             document.getElementById('btn-conv').innerText = t.conv;
 
-            // تحديث البطاقات الموجودة حالياً إذا كانت معروضة لكي تتوافق مع اللغة الجديدة
+            // تحديث البطاقات الموجودة إذا كانت معروضة
             if (lastMarketData.length > 0) {
                 renderCards(lastMarketData, document.getElementById('results-container'), lang);
             }
