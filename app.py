@@ -254,7 +254,7 @@ HTML_TEMPLATE = """
                 <span>📸</span> <span id="ig-text">إنستغرام</span>
             </a>
             <!-- تم تعديل رابط البوت هنا ليوجه نحو بوت تيليجرام الخاص بك مباشرة -->
-            <a href="https://t.me/dahnoun_kacem_bot" target="_blank" class="social-btn btn-bot" id="bot-btn">
+            <a href="https://t.me/Kacem991_bot" target="_blank" class="social-btn btn-bot" id="bot-btn">
                 <span>🤖</span> <span id="bot-text">بوت التليجرام</span>
             </a>
         </div>
