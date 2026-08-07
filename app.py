@@ -261,7 +261,7 @@ HTML_TEMPLATE = """
             <a href="https://www.instagram.com/d.a__k91" target="_blank" class="social-btn btn-instagram" id="ig-btn">
                 <span>📸</span> <span id="ig-text">إنستغرام</span>
             </a>
-            <a href="https://t.me/Kacem991_bot" target="_blank" class="social-btn btn-bot">
+            <a href="https://t.me/Kacem991_bot" target="_blank" class="social-btn btn-bot" id="bot-btn">
                 <span>🤖</span> <span id="bot-text">بوت التليجرام</span>
             </a>
         </div>
