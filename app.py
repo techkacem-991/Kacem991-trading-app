@@ -2,14 +2,17 @@ import threading
 from flask import Flask, request, render_template_string, jsonify
 import yfinance as yf
 import pandas as pd
+import requests
+import time
+import schedule
 
 app = Flask('')
 
 SYMBOLS_TO_SCAN = [
     "BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD", "AVAX-USD", "HBAR-USD", "LINK-USD", "INJ-USD",
-    "DOGE-USD", "WBTC-USD", "WBETH-USD", "ADA-USD", "NEAR-USD", "ETC-USD", "SUI-USD",
+    "DOGE-USD", "WBTC-USD", "WBETH-USD", "ADA-USD", "NEAR-USD", "LINK-USD", "ETC-USD", "SUI-USD",
     "RENDER-USD", "FET-USD", "LTC-USD", "BCH-USD", "ZEC-USD", "TRX-USD", "DASH-USD", "APT-USD",
-    "ATOM-USD", "XLM-USD", "FIL-USD", "ALGO-USD", "ICP-USD", "XAUT-USD", "EUL-USD", "ONDO-USD"
+    "ATOM-USD", "ETC-USD", "XLM-USD", "FIL-USD", "ALGO-USD", "ICP-USD", "XAUT-USD", "EUL-USD", "ONDO-USD"
 ]
 
 def get_all_market_opportunities():
@@ -125,16 +128,15 @@ HTML_TEMPLATE = """
         }
         .container { max-width: 700px; margin: auto; }
         
+        /* الشريط العلوي */
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
-            position: relative;
-            z-index: 999; /* ضمان ظهور القائمة واستجابتها للضغط فوق أي عنصر */
         }
         .language-selector-container select {
-            padding: 8px 14px;
+            padding: 6px 12px;
             border-radius: 8px;
             background-color: #1e293b;
             color: #fff;
@@ -143,35 +145,34 @@ HTML_TEMPLATE = """
             font-size: 14px;
             outline: none;
             width: auto;
-            appearance: menulist; /* ضمان ظهور السهم الافتراضي للمتصفح */
         }
 
+        /* شريط أزرار السوشيال ميديا تحت الوصف */
         .social-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin: 15px 0 20px 0;
-            gap: 10px;
+            gap: 15px;
         }
         .social-btn {
             flex: 1;
-            padding: 10px 10px;
+            padding: 10px 15px;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 14px;
             text-decoration: none;
             color: white;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
             box-shadow: 0 3px 6px rgba(0,0,0,0.2);
             transition: opacity 0.2s ease;
         }
         .social-btn:hover { opacity: 0.9; }
         .btn-facebook { background: linear-gradient(45deg, #20b0a9, #20a4b0, #137bd1, #1548bf, #1625a8); }
         .btn-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
-        .btn-bot { background: linear-gradient(45deg, #22c55e, #10b981, #047857); }
 
         .card { 
             background: rgba(30, 41, 59, 0.85); 
@@ -235,6 +236,7 @@ HTML_TEMPLATE = """
 </head>
 <body>
     <div class="container">
+        <!-- الشريط العلوي -->
         <div class="top-bar">
             <div class="language-selector-container">
                 <select id="languageSelect" onchange="changeLanguage(this.value)">
@@ -243,21 +245,20 @@ HTML_TEMPLATE = """
                     <option value="en">🇬🇧 English</option>
                 </select>
             </div>
-            <span style="color: #ef4444; font-weight: bold; font-size: 14px;" id="beta-text">Beta version</span>
+            
+            <span style="color: #ef4444; font-weight: bold; font-size: 14px;">Beta version</span>
         </div>
 
         <h2 id="app-title">TRADING WITH KACEM 📊 🤑</h2>
         <p id="app-desc">صفقات تداول فورية (سبوت) لأكثر من 30 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥</p>
         
+        <!-- أزرار الفيسبوك وإنستغرام في الأماكن المحددة -->
         <div class="social-bar">
             <a href="https://facebook.com/dahnoun.kacem.2025" target="_blank" class="social-btn btn-facebook" id="fb-btn">
                 <span>📘</span> <span id="fb-text">فايسبوك</span>
             </a>
             <a href="https://www.instagram.com/d.a__k91" target="_blank" class="social-btn btn-instagram" id="ig-btn">
                 <span>📸</span> <span id="ig-text">إنستغرام</span>
-            </a>
-            <a href="https://t.me/Kacem991_bot" target="_blank" class="social-btn btn-bot" id="bot-btn">
-                <span>🤖</span> <span id="bot-text">بوت التليجرام</span>
             </a>
         </div>
 
@@ -279,9 +280,8 @@ HTML_TEMPLATE = """
         const translations = {
             ar: {
                 desc: "صفقات تداول فورية (سبوت) لأكثر من 30 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥",
-                fbText: "فايسبوك",
+                fbText: "صفحة الفيسبوك",
                 igText: "إنستغرام",
-                botText: "بوت التليجرام",
                 scan: "إفحص السوق الآن 🔍",
                 export: "تصدير النتائج 💾",
                 sort: "الترتيب حسب نسب النجاح 📈",
@@ -304,10 +304,9 @@ HTML_TEMPLATE = """
                 rateLabel: "سعر الصرف:"
             },
             fr: {
-                desc: "Signaux de trading spot instantanés pour plus de 30 cryptomonnaies populaires🔥",
-                fbText: "Facebook",
+                desc: "Signaux de trading spot instantanés pour plus de 27 cryptomonnaies populaires🔥",
+                fbText: "Page Facebook",
                 igText: "Instagram",
-                botText: "Bot Telegram",
                 scan: "Scanner le marché 🔍",
                 export: "Exporter les résultats 💾",
                 sort: "Trier par taux de réussite 📈",
@@ -330,10 +329,9 @@ HTML_TEMPLATE = """
                 rateLabel: "Taux de change:"
             },
             en: {
-                desc: "Instant spot trading signals for over 30 popular cryptocurrencies🔥",
-                fbText: "Facebook",
+                desc: "Instant spot trading signals for over 27 popular cryptocurrencies🔥",
+                fbText: "Facebook Page",
                 igText: "Instagram",
-                botText: "Telegram Bot",
                 scan: "Scan Market Now 🔍",
                 export: "Export Results 💾",
                 sort: "Sort by Success Rate 📈",
@@ -368,22 +366,20 @@ HTML_TEMPLATE = """
             }
 
             const t = translations[lang];
-            if (!t) return;
-
             document.getElementById('app-desc').innerText = t.desc;
             document.getElementById('fb-text').innerText = t.fbText;
             document.getElementById('ig-text').innerText = t.igText;
-            document.getElementById('bot-text').innerText = t.botText;
             document.getElementById('btn-scan').innerText = t.scan;
             document.getElementById('btn-export').innerText = t.export;
             document.getElementById('btn-sort').innerText = t.sort;
             document.getElementById('btn-top').innerText = t.top;
             document.getElementById('btn-conv').innerText = t.conv;
+        }
 
-            // تحديث البطاقات الموجودة إذا كانت معروضة
-            if (lastMarketData.length > 0) {
-                renderCards(lastMarketData, document.getElementById('results-container'), lang);
-            }
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+            .then(() => console.log('Service Worker Registered'))
+            .catch((err) => console.log('Service Worker Failed', err));
         }
 
         function getCurrentLang() {
@@ -499,9 +495,9 @@ HTML_TEMPLATE = """
                 alert(t.noExport);
                 return;
             }
-            let textContent = "--- Trading Signals Report ---\n\n";
+            let textContent = "--- Trading Signals Report ---\\n\\n";
             lastMarketData.forEach(res => {
-                textContent += `Symbol: ${res.symbol}\nPrice: ${res.price}\nWin Rate: ${res.win}%\nTP1: ${res.tp1}\nTP2: ${res.tp2}\nSL: ${res.sl}\n-------------------\n`;
+                textContent += `Symbol: ${res.symbol}\\nPrice: ${res.price}\\nWin Rate: ${res.win}%\\nTP1: ${res.tp1}\\nTP2: ${res.tp2}\\nSL: ${res.sl}\\n-------------------\\n`;
             });
             let blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
             let url = URL.createObjectURL(blob);
@@ -556,6 +552,7 @@ HTML_TEMPLATE = """
         }
 
         function convertCurrency() {
+            const lang = getCurrentLang();
             const amount = parseFloat(document.getElementById('conv-amount').value);
             const from = document.getElementById('conv-from').value;
             const to = document.getElementById('conv-to').value;
@@ -592,7 +589,7 @@ HTML_TEMPLATE = """
 
 @app.route('/manifest.json')
 def manifest():
-    return jsonify({
+    manifest_data = {
         "id": "/",
         "name": "TRADING WITH KACEM",
         "short_name": "TRADING WITH KACEM",
@@ -602,16 +599,51 @@ def manifest():
         "background_color": "#0f172a",
         "theme_color": "#33779c",
         "description": "بوت فحص الأسواق وجلب فرص التداول الذكية بدقة عالية.",
-        "icons": [{
-            "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785554014/copy_of_22222222222222222222222_fcin7r.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }]
-    })
+        "categories": ["finance", "business", "productivity"],
+        "icons": [
+            {
+                "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785554014/copy_of_22222222222222222222222_fcin7r.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "any maskable"
+            }
+        ],
+        "screenshots": [
+            {
+                "src": "https://res.cloudinary.com/ke7jwn4a/image/upload/v1785554014/copy_of_22222222222222222222222_fcin7r.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "form_factor": "wide",
+                "label": "لقطة شاشة لتطبيق إشارات التداول"
+            }
+        ]
+    }
+    return jsonify(manifest_data)
 
 @app.route('/sw.js')
 def service_worker():
-    return "const CACHE_NAME='v1';", 200, {'Content-Type': 'application/javascript'}
+    sw_code = """
+    const CACHE_NAME = 'trading-kacem-v1';
+    const urlsToCache = [
+        '/',
+        '/manifest.json'
+    ];
+
+    self.addEventListener('install', (e) => {
+        e.waitUntil(
+            caches.open(CACHE_NAME)
+                .then((cache) => cache.addAll(urlsToCache))
+        );
+    });
+
+    self.addEventListener('fetch', (e) => {
+        e.respondWith(
+            caches.match(e.request)
+                .then((response) => response || fetch(e.request))
+        );
+    });
+    """
+    return sw_code, 200, {'Content-Type': 'application/javascript'}
 
 @app.route('/', methods=['GET'])
 def home():
@@ -626,7 +658,8 @@ def api_top():
     results = get_all_market_opportunities()
     if not results:
         return jsonify({})
-    return jsonify(max(results, key=lambda x: x['win']))
+    best = max(results, key=lambda x: x['win'])
+    return jsonify(best)
 
 @app.route('/api/sort', methods=['GET'])
 def api_sort():
@@ -647,14 +680,24 @@ def api_convert():
         pair = f"{from_curr}{to_curr}=X"
         ticker = yf.Ticker(pair)
         hist = ticker.history(period="1d", interval="1m")
+        
         if not hist.empty:
             rate = float(hist['Close'].iloc[-1])
         else:
-            ticker_inv = yf.Ticker(f"{to_curr}{from_curr}=X")
+            pair_inv = f"{to_curr}{from_curr}=X"
+            ticker_inv = yf.Ticker(pair_inv)
             hist_inv = ticker_inv.history(period="1d", interval="1m")
-            rate = 1.0 / float(hist_inv['Close'].iloc[-1]) if not hist_inv.empty else 1.0
+            if not hist_inv.empty:
+                rate = 1.0 / float(hist_inv['Close'].iloc[-1])
+            else:
+                rate = 1.0
 
-        return jsonify({"success": True, "rate": float(rate), "result": float(amount * rate)})
+        result = amount * rate
+        return jsonify({
+            "success": True,
+            "rate": float(rate),
+            "result": float(result)
+        })
     except Exception as e:
         return jsonify({"success": False, "error": str(e)})
 
