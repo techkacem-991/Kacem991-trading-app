@@ -173,7 +173,7 @@ HTML_TEMPLATE = """
         .social-btn:hover { opacity: 0.9; }
         .btn-facebook { background: linear-gradient(45deg, #20b0a9, #20a4b0, #137bd1, #1548bf, #1625a8); }
         .btn-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
-        .btn-bot { background: linear-gradient(45deg, #22c55e, #10b981, #047857); }
+        .btn-bot { background: linear-gradient(45deg, #1625a8, #1548bf, #137bd1, #20a4b0, #20b0a9); }
 
         .card { 
             background: rgba(30, 41, 59, 0.85); 
