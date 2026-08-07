@@ -260,6 +260,9 @@ HTML_TEMPLATE = """
             <a href="https://www.instagram.com/d.a__k91" target="_blank" class="social-btn btn-instagram" id="ig-btn">
                 <span>📸</span> <span id="ig-text">إنستغرام</span>
             </a>
+            <a href="https://t.me/Kacem991_bot" target="_blank" class="social-btn btn-bot">
+                <span>🤖</span> <span id="bot-text">بوت التليجرام</span>
+            </a>
         </div>
 
         <button onclick="fetchAllSignals()" id="btn-scan">إفحص السوق الآن 🔍</button>
@@ -304,7 +307,7 @@ HTML_TEMPLATE = """
                 rateLabel: "سعر الصرف:"
             },
             fr: {
-                desc: "Signaux de trading spot instantanés pour plus de 27 cryptomonnaies populaires🔥",
+                desc: "Signaux de trading spot instantanés pour plus de 30 cryptomonnaies populaires🔥",
                 fbText: "Page Facebook",
                 igText: "Instagram",
                 scan: "Scanner le marché 🔍",
@@ -329,7 +332,7 @@ HTML_TEMPLATE = """
                 rateLabel: "Taux de change:"
             },
             en: {
-                desc: "Instant spot trading signals for over 27 popular cryptocurrencies🔥",
+                desc: "Instant spot trading signals for over 30 popular cryptocurrencies🔥",
                 fbText: "Facebook Page",
                 igText: "Instagram",
                 scan: "Scan Market Now 🔍",
