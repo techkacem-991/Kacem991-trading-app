@@ -128,6 +128,7 @@ HTML_TEMPLATE = """
         }
         .container { max-width: 700px; margin: auto; }
         
+        /* الشريط العلوي */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -146,34 +147,33 @@ HTML_TEMPLATE = """
             width: auto;
         }
 
+        /* شريط أزرار السوشيال ميديا تحت الوصف */
         .social-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin: 15px 0 20px 0;
-            gap: 15px;
-            flex-wrap: wrap;
+            gap: 10px;
         }
         .social-btn {
             flex: 1;
-            min-width: 130px;
-            padding: 10px 15px;
+            padding: 10px 10px;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
             text-decoration: none;
             color: white;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             box-shadow: 0 3px 6px rgba(0,0,0,0.2);
             transition: opacity 0.2s ease;
         }
         .social-btn:hover { opacity: 0.9; }
         .btn-facebook { background: linear-gradient(45deg, #20b0a9, #20a4b0, #137bd1, #1548bf, #1625a8); }
         .btn-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
-        .btn-telegram { background: linear-gradient(45deg, #0088cc, #229ed9); }
+        .btn-bot { background: linear-gradient(45deg, #22c55e, #10b981, #047857); }
 
         .card { 
             background: rgba(30, 41, 59, 0.85); 
@@ -233,17 +233,6 @@ HTML_TEMPLATE = """
             box-sizing: border-box;
         }
         label { font-size: 13px; color: #38bdf8; font-weight: bold; }
-        
-        /* إعدادات لوحة التحكم المصغرة لرابط البوت */
-        .admin-box {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px dashed #475569;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            text-align: right;
-        }
-        html[dir="ltr"] .admin-box { text-align: left; }
     </style>
 </head>
 <body>
@@ -257,22 +246,14 @@ HTML_TEMPLATE = """
                     <option value="en">🇬🇧 English</option>
                 </select>
             </div>
+            
             <span style="color: #ef4444; font-weight: bold; font-size: 14px;">Beta version</span>
         </div>
 
         <h2 id="app-title">TRADING WITH KACEM 📊 🤑</h2>
         <p id="app-desc">صفقات تداول فورية (سبوت) لأكثر من 30 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥</p>
         
-        <!-- خانة إدخال وتعديل رابط بوت التليغرام -->
-        <div class="admin-box">
-            <label id="tg-input-label">🤖 رابط بوت التليغرام الخاص بك:</label>
-            <div style="display: flex; gap: 8px; margin-top: 5px;">
-                <input type="url" id="telegramLinkInput" placeholder="https://t.me/YourBotName" style="margin-bottom: 0; flex: 1;">
-                <button onclick="saveTelegramLink()" id="btn-save-tg" style="width: auto; margin-top: 0; padding: 0 15px; background: #0088cc;">حفظ</button>
-            </div>
-        </div>
-
-        <!-- أزرار الفيسبوك، إنستغرام، والتليغرام -->
+        <!-- أزرار الفيسبوك، إنستغرام، والبوت -->
         <div class="social-bar">
             <a href="https://facebook.com/dahnoun.kacem.2025" target="_blank" class="social-btn btn-facebook" id="fb-btn">
                 <span>📘</span> <span id="fb-text">فايسبوك</span>
@@ -280,8 +261,9 @@ HTML_TEMPLATE = """
             <a href="https://www.instagram.com/d.a__k91" target="_blank" class="social-btn btn-instagram" id="ig-btn">
                 <span>📸</span> <span id="ig-text">إنستغرام</span>
             </a>
-            <a href="#" target="_blank" class="social-btn btn-telegram" id="tg-btn">
-                <span>🤖</span> <span id="tg-text">بوت التليغرام</span>
+            <!-- خانة رابط البوت المباشر -->
+            <a href="https://t.me/YOUR_BOT_USERNAME" target="_blank" class="social-btn btn-bot" id="bot-btn">
+                <span>🤖</span> <span id="bot-text">بوت التلغرام</span>
             </a>
         </div>
 
@@ -305,9 +287,7 @@ HTML_TEMPLATE = """
                 desc: "صفقات تداول فورية (سبوت) لأكثر من 30 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥",
                 fbText: "فايسبوك",
                 igText: "إنستغرام",
-                tgText: "بوت التليغرام",
-                tgLabel: "🤖 رابط بوت التليغرام الخاص بك:",
-                saveBtn: "حفظ",
+                botText: "البوت المباشر",
                 scan: "إفحص السوق الآن 🔍",
                 export: "تصدير النتائج 💾",
                 sort: "الترتيب حسب نسب النجاح 📈",
@@ -333,9 +313,7 @@ HTML_TEMPLATE = """
                 desc: "Signaux de trading spot instantanés pour plus de 27 cryptomonnaies populaires🔥",
                 fbText: "Facebook",
                 igText: "Instagram",
-                tgText: "Bot Telegram",
-                tgLabel: "🤖 Lien de votre bot Telegram :",
-                saveBtn: "Enregistrer",
+                botText: "Bot Direct",
                 scan: "Scanner le marché 🔍",
                 export: "Exporter les résultats 💾",
                 sort: "Trier par taux de réussite 📈",
@@ -361,9 +339,7 @@ HTML_TEMPLATE = """
                 desc: "Instant spot trading signals for over 27 popular cryptocurrencies🔥",
                 fbText: "Facebook",
                 igText: "Instagram",
-                tgText: "Telegram Bot",
-                tgLabel: "🤖 Your Telegram Bot Link:",
-                saveBtn: "Save",
+                botText: "Direct Bot",
                 scan: "Scan Market Now 🔍",
                 export: "Export Results 💾",
                 sort: "Sort by Success Rate 📈",
@@ -387,28 +363,6 @@ HTML_TEMPLATE = """
             }
         };
 
-        // إدارة حفظ واسترجاع رابط التليغرام تلقائياً
-        function loadTelegramLink() {
-            const savedLink = localStorage.getItem('user_telegram_bot_link') || 'https://t.me/YourBotName';
-            document.getElementById('telegramLinkInput').value = savedLink;
-            document.getElementById('tg-btn').href = savedLink;
-        }
-
-        function saveTelegramLink() {
-            const linkInput = document.getElementById('telegramLinkInput').value.trim();
-            if(linkInput) {
-                localStorage.setItem('user_telegram_bot_link', linkInput);
-                document.getElementById('tg-btn').href = linkInput;
-                alert('تم حفظ رابط بوت التليغرام بنجاح! ✅');
-            } else {
-                alert('يرجى إدخال رابط صحيح.');
-            }
-        }
-
-        window.onload = function() {
-            loadTelegramLink();
-        };
-
         function changeLanguage(lang) {
             const htmlTag = document.documentElement;
             if (lang === 'ar') {
@@ -423,9 +377,7 @@ HTML_TEMPLATE = """
             document.getElementById('app-desc').innerText = t.desc;
             document.getElementById('fb-text').innerText = t.fbText;
             document.getElementById('ig-text').innerText = t.igText;
-            document.getElementById('tg-text').innerText = t.tgText;
-            document.getElementById('tg-input-label').innerText = t.tgLabel;
-            document.getElementById('btn-save-tg').innerText = t.saveBtn;
+            document.getElementById('bot-text').innerText = t.botText;
             document.getElementById('btn-scan').innerText = t.scan;
             document.getElementById('btn-export').innerText = t.export;
             document.getElementById('btn-sort').innerText = t.sort;
@@ -552,9 +504,9 @@ HTML_TEMPLATE = """
                 alert(t.noExport);
                 return;
             }
-            let textContent = "--- Trading Signals Report ---\\n\\n";
+            let textContent = "--- Trading Signals Report ---\n\n";
             lastMarketData.forEach(res => {
-                textContent += `Symbol: ${res.symbol}\\nPrice: ${res.price}\\nWin Rate: ${res.win}%\\nTP1: ${res.tp1}\\nTP2: ${res.tp2}\\nSL: ${res.sl}\\n-------------------\\n`;
+                textContent += `Symbol: ${res.symbol}\nPrice: ${res.price}\nWin Rate: ${res.win}%\nTP1: ${res.tp1}\nTP2: ${res.tp2}\nSL: ${res.sl}\n-------------------\n`;
             });
             let blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
             let url = URL.createObjectURL(blob);
@@ -690,7 +642,7 @@ def service_worker():
         e.waitUntil(
             caches.open(CACHE_NAME)
                 .then((cache) => cache.addAll(urlsToCache))
-            );
+        );
     });
 
     self.addEventListener('fetch', (e) => {
