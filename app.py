@@ -376,6 +376,7 @@ HTML_TEMPLATE = """
             document.getElementById('app-desc').innerText = t.desc;
             document.getElementById('fb-text').innerText = t.fbText;
             document.getElementById('ig-text').innerText = t.igText;
+            document.getElementById('bot-text').innerText = t.botText;
             document.getElementById('btn-scan').innerText = t.scan;
             document.getElementById('btn-export').innerText = t.export;
             document.getElementById('btn-sort').innerText = t.sort;
