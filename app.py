@@ -262,7 +262,7 @@ HTML_TEMPLATE = """
                 <span>📸</span> <span id="ig-text">إنستغرام</span>
             </a>
             <!-- خانة رابط البوت المباشر -->
-            <a href="https://t.me/YOUR_BOT_USERNAME" target="_blank" class="social-btn btn-bot" id="bot-btn">
+            <a href="https://t.me/kacem991__Bot" target="_blank" class="social-btn btn-bot" id="bot-btn">
                 <span>🤖</span> <span id="bot-text">بوت التلغرام</span>
             </a>
         </div>
