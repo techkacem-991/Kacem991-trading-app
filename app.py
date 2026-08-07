@@ -136,7 +136,7 @@ HTML_TEMPLATE = """
             margin-bottom: 10px;
         }
         .language-selector-container select {
-            padding: 6px 12px;
+            padding: 8px 14px;
             border-radius: 8px;
             background-color: #1e293b;
             color: #fff;
@@ -153,7 +153,7 @@ HTML_TEMPLATE = """
             justify-content: space-between;
             align-items: center;
             margin: 15px 0 20px 0;
-            gap: 15px;
+            gap: 10px;
         }
         .social-btn {
             flex: 1;
