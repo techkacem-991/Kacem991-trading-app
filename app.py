@@ -157,16 +157,16 @@ HTML_TEMPLATE = """
         }
         .social-btn {
             flex: 1;
-            padding: 10px 15px;
+            padding: 10px 10px;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
             text-decoration: none;
             color: white;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             box-shadow: 0 3px 6px rgba(0,0,0,0.2);
             transition: opacity 0.2s ease;
         }
