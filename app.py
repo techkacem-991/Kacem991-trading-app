@@ -284,7 +284,7 @@ HTML_TEMPLATE = """
         const translations = {
             ar: {
                 desc: "صفقات تداول فورية (سبوت) لأكثر من 30 عملة رقمية من الأشهر والأنشط في سوق الكريبتو🔥",
-                fbText: "صفحة الفيسبوك",
+                fbText: "الفيسبوك",
                 igText: "إنستغرام",
                 scan: "إفحص السوق الآن 🔍",
                 export: "تصدير النتائج 💾",
@@ -309,7 +309,7 @@ HTML_TEMPLATE = """
             },
             fr: {
                 desc: "Signaux de trading spot instantanés pour plus de 30 cryptomonnaies populaires🔥",
-                fbText: "Page Facebook",
+                fbText: "Facebook",
                 igText: "Instagram",
                 scan: "Scanner le marché 🔍",
                 export: "Exporter les résultats 💾",
@@ -334,7 +334,7 @@ HTML_TEMPLATE = """
             },
             en: {
                 desc: "Instant spot trading signals for over 30 popular cryptocurrencies🔥",
-                fbText: "Facebook Page",
+                fbText: "Facebook",
                 igText: "Instagram",
                 scan: "Scan Market Now 🔍",
                 export: "Export Results 💾",
